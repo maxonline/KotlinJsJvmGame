@@ -1,0 +1,14 @@
+.gradle
+.idea
+build
+node_modules
+
+js/web/js/generated
+.DS_Store
+*.iml
+
+classes/
+build/
+out/
+
+
