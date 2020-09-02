@@ -1,8 +1,6 @@
 package maxonline.shared
 
-import kotlinx.io.core.BytePacketBuilder
-import kotlinx.io.core.ByteReadPacket
-import kotlinx.io.core.readBytes
+import io.ktor.utils.io.core.*
 
 
 @ExperimentalUnsignedTypes

@@ -5,6 +5,7 @@ import io.ktor.websocket.DefaultWebSocketServerSession
 import maxonline.shared.Player
 import maxonline.shared.PlayerPosition
 import maxonline.shared.toByteArray
+import maxonline.shared.toBytes
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import kotlin.math.pow
@@ -44,7 +45,7 @@ class GameServer {
         }
 
         session.send(
-            Frame.Binary(true, toByteArray(sessionToPlayers.values.toList()))
+            Frame.Binary(true, toBytes(sessionToPlayers.values.toList()))
         )
     }
 

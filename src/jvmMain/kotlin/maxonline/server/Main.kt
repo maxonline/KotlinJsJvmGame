@@ -23,9 +23,10 @@ fun main() {
             get("/") {
                 call.respondHtml {
                     head {
-                        title("Kotlin JS JSM Game")
+                        title("KotlinJsJvmGame")
                     }
                     body {
+                        canvas("gameCanvas", "")
                         script(src = "/static/KotlinJsJvmGame.js") {}
                     }
                 }
