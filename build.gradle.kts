@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 plugins {
     kotlin("multiplatform") version "1.4.0"
+    kotlin("plugin.serialization") version "1.4.0"
     application
 }
 group = "maxonline"
@@ -9,6 +10,7 @@ group = "maxonline"
 val ktor_version = "1.4.0"
 val kotlinx_version = "0.7.2"
 val logback_version = "1.2.3"
+val serialization_version = "1.0.0-RC"
 
 repositories {
     mavenCentral()
@@ -48,7 +50,10 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                implementation(kotlin("serialization"))
                 implementation("io.ktor:ktor-utils:$ktor_version")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:$serialization_version")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:$serialization_version")
             }
         }
         val commonTest by getting {
@@ -64,6 +69,9 @@ kotlin {
                 implementation("io.ktor:ktor-websockets:$ktor_version")
                 implementation("io.ktor:ktor-utils-jvm:$ktor_version")
                 implementation("ch.qos.logback:logback-classic:$logback_version")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:$serialization_version")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf-jvm:$serialization_version")
+
             }
         }
         val jvmTest by getting {
@@ -74,8 +82,10 @@ kotlin {
         val jsMain by getting {
             dependencies {
                 implementation("io.ktor:ktor-utils-js:$ktor_version")
-
                 implementation("org.jetbrains.kotlinx:kotlinx-html-js:$kotlinx_version")
+
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core-js:$serialization_version")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf-js:$serialization_version")
             }
         }
         val jsTest by getting {
@@ -99,4 +109,10 @@ tasks.getByName<Jar>("jvmJar") {
 tasks.getByName<JavaExec>("run") {
     dependsOn(tasks.getByName<Jar>("jvmJar"))
     classpath(tasks.getByName<Jar>("jvmJar"))
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile> {
+    kotlinOptions {
+        sourceMap = true
+    }
 }

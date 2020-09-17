@@ -3,28 +3,78 @@ package maxonline.client
 
 import kotlinx.browser.document
 import kotlinx.browser.window
+import maxonline.shared.GameMessage
+import maxonline.shared.Player
+import maxonline.shared.PlayerMessage
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLCanvasElement
-import org.w3c.dom.get
+
+val canvas: HTMLCanvasElement = document.getElementById("gameCanvas") as HTMLCanvasElement
+val context: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D
+val network = Network("ws://" + document.location?.host) { onMessage(it) }
+
+var me: Player = Player(0, 0, 0, 0, 0, 0, 0)
+var players: Collection<Player> = ArrayList()
+
+var lastSendTimestamp = 0.0;
 
 @ExperimentalUnsignedTypes
 fun main() {
-    val canvas: HTMLCanvasElement = document.getElementsByClassName("gameCanvas")[0] as HTMLCanvasElement
     canvas.width = 800
     canvas.height = 600
-    val context: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D
 
-    context.moveTo(0.0, 0.0)
-    context.lineTo(600.0, 500.0)
-    context.stroke()
 
+    canvas.onmousedown = {
+        ypos = 100.0
+        canvas.asDynamic().requestPointerLock()
+    }
+
+    canvas.onmousemove = {
+        ypos += it.asDynamic().movementY as Double
+        xpos += it.asDynamic().movementX as Double
+        canvas.asDynamic().requestPointerLock()
+    }
     window.onload = {
-        play();
-        println("hej")
+        loop()
     }
 }
 
-fun play() {
-    println("play")
-
+fun sendState() {
+    network.sendMessage(PlayerMessage(me))
+    lastSendTimestamp = window.performance.now()
 }
+
+fun onMessage(gameMessage: GameMessage) {
+    val myId = gameMessage.yourId
+    me = gameMessage.players.first { it.playerId == myId }.copy(x = me.x, y = me.y)
+    players = gameMessage.players.filterNot { it.playerId == myId }
+}
+
+
+var ypos = 100.0
+var xpos = 100.0
+
+fun loop() {
+    context.setTransform(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);//reset the transform matrix as it is cumulative
+    context.clearRect(
+        0.0,
+        0.0,
+        canvas.width.toDouble(),
+        canvas.height.toDouble()
+    )
+
+    context.translate(-xpos + canvas.width.toDouble() / 2, -ypos + canvas.width.toDouble() / 2);
+
+    context.fillRect(100.0, 100.0, 10.0, 10.0);
+
+
+    context.fillRect(xpos, ypos, 10.0, 2.0); // mouse
+    context.fillRect(xpos + 3, ypos, 2.0, 3.0); // mouse
+
+    if(window.performance.now() - lastSendTimestamp > 100){
+        sendState()
+    }
+
+    window.requestAnimationFrame { loop() }
+}
+

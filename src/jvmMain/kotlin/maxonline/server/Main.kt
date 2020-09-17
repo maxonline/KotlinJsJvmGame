@@ -26,7 +26,7 @@ fun main() {
                         title("KotlinJsJvmGame")
                     }
                     body {
-                        canvas("gameCanvas", "")
+                        canvas { id = "gameCanvas" }
                         script(src = "/static/KotlinJsJvmGame.js") {}
                     }
                 }
@@ -37,14 +37,14 @@ fun main() {
             webSocket("/") {
                 log.info("New player connected: ${call.request.origin.host}")
                 try {
-                    for (frame in incoming){
+                    for (frame in incoming) {
                         val bytes = (frame as Frame.Binary).readBytes()
                         gameServer.onMessage(bytes, this)
                     }
                 } catch (e: ClosedReceiveChannelException) {
                     log.error("onClosedException ${closeReason.await()} : ${call.request.origin.host}", e)
                 } catch (e: Throwable) {
-                    log.error("onError ${closeReason.await()} : ${call.request.origin.host}", e)
+                    log.error("onError: ${call.request.origin.host}", e)
                 }
                 log.info("player disconnected ${call.request.origin.host}")
                 gameServer.onClose(this)
