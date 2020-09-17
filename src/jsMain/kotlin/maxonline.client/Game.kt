@@ -25,14 +25,16 @@ fun main() {
 
 
     canvas.onmousedown = {
-        ypos = 100.0
         canvas.asDynamic().requestPointerLock()
     }
 
     canvas.onmousemove = {
-        ypos += it.asDynamic().movementY as Double
-        xpos += it.asDynamic().movementX as Double
-        canvas.asDynamic().requestPointerLock()
+        if (document.asDynamic().pointerLockElement != null) {
+            val x = me.x + it.asDynamic().movementX as Double
+            val y = me.y + it.asDynamic().movementY as Double
+            me = me.copy(x = x.toShort(), y = y.toShort())
+            canvas.asDynamic().requestPointerLock()
+        }
     }
     window.onload = {
         loop()
@@ -51,9 +53,6 @@ fun onMessage(gameMessage: GameMessage) {
 }
 
 
-var ypos = 100.0
-var xpos = 100.0
-
 fun loop() {
     context.setTransform(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);//reset the transform matrix as it is cumulative
     context.clearRect(
@@ -63,18 +62,34 @@ fun loop() {
         canvas.height.toDouble()
     )
 
-    context.translate(-xpos + canvas.width.toDouble() / 2, -ypos + canvas.width.toDouble() / 2);
+    val x = me.x.toDouble()
+    val y = me.y.toDouble()
+    context.translate(-x + canvas.width.toDouble() / 2, -y + canvas.width.toDouble() / 2);
 
+    context.fillStyle = "black"
     context.fillRect(100.0, 100.0, 10.0, 10.0);
 
+    paintMouse(x, y, "rgba(${me.red.toUByte()} ,${me.green.toUByte()} ,${me.blue.toUByte()}, 1 )")
 
-    context.fillRect(xpos, ypos, 10.0, 2.0); // mouse
-    context.fillRect(xpos + 3, ypos, 2.0, 3.0); // mouse
+    players.forEach {
+        paintMouse(
+            it.x.toDouble(),
+            it.y.toDouble(),
+            "rgba(${it.red.toUByte()} ,${it.green.toUByte()} ,${it.blue.toUByte()}, 0.5 )"
+        )
 
-    if(window.performance.now() - lastSendTimestamp > 100){
+    }
+
+    if (window.performance.now() - lastSendTimestamp > 100) {
         sendState()
     }
 
     window.requestAnimationFrame { loop() }
+}
+
+private fun paintMouse(x: Double, y: Double, fillStyle: String) {
+    context.fillStyle = fillStyle
+    context.fillRect(x, y, 10.0, 2.0); // mouse
+    context.fillRect(x + 3, y, 2.0, 5.0); // mouse
 }
 

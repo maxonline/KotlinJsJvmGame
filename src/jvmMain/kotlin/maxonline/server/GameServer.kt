@@ -17,7 +17,7 @@ class GameServer {
 
     private val sessionToPlayers = HashMap<DefaultWebSocketServerSession, Player>()
 
-    private val lastId:Short = 0
+    private var lastId:Short = 1
 
     suspend fun onMessage(
         bytes: ByteArray,
@@ -57,7 +57,7 @@ class GameServer {
             green = random.nextBytes(1)[0],
             blue = random.nextBytes(1)[0],
             score = 0,
-            playerId = lastId
+            playerId = lastId++
         )
     }
 }
