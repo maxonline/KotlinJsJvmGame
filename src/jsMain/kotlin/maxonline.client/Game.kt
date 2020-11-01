@@ -3,11 +3,13 @@ package maxonline.client
 
 import kotlinx.browser.document
 import kotlinx.browser.window
+import maxonline.shared.DeathCircle
 import maxonline.shared.GameMessage
 import maxonline.shared.Player
 import maxonline.shared.PlayerMessage
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLCanvasElement
+import kotlin.math.PI
 
 val canvas: HTMLCanvasElement = document.getElementById("gameCanvas") as HTMLCanvasElement
 val context: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D
@@ -15,6 +17,7 @@ val network = Network("ws://" + document.location?.host) { onMessage(it) }
 
 var me: Player = Player(0, 0, 0, 0, 0, 0, 0)
 var players: Collection<Player> = ArrayList()
+var deathCircles: List<DeathCircle> = ArrayList()
 
 var myId: Short? = null;
 
@@ -24,7 +27,6 @@ var lastSendTimestamp = 0.0;
 fun main() {
     canvas.width = 800
     canvas.height = 600
-
 
     canvas.onmousedown = {
         if (document.asDynamic().pointerLockElement != null) {
@@ -47,7 +49,7 @@ fun main() {
     }
 }
 
-fun sendState() {
+fun sendStateToServer() {
     network.sendMessage(PlayerMessage(me))
     lastSendTimestamp = window.performance.now()
 }
@@ -59,6 +61,10 @@ fun onMessage(gameMessage: GameMessage) {
     if (gameMessage.players != null) {
         me = gameMessage.players.first { it.playerId == myId }.copy(x = me.x, y = me.y)
         players = gameMessage.players.filterNot { it.playerId == myId }
+    }
+
+    if(gameMessage.deathCircles != null){
+        deathCircles = gameMessage.deathCircles
     }
 }
 
@@ -89,17 +95,36 @@ fun loop() {
         )
 
     }
+    deathCircles.forEach {
+        paintDeathCircle(
+            it.x.toDouble(),
+            it.y.toDouble(),
+            "rgba(${it.red.toUByte()} ,${it.green.toUByte()} ,${it.blue.toUByte()}, 0.9 )",
+            diameter =  it.diameter.toDouble(),
+        )
+
+    }
 
     if (window.performance.now() - lastSendTimestamp > 100) {
-        sendState()
+        sendStateToServer()
     }
 
     window.requestAnimationFrame { loop() }
 }
 
 private fun paintMouse(x: Double, y: Double, fillStyle: String) {
+    context.beginPath();
+    context.moveTo(x, y);
+    context.lineTo(x+15, y+2);
+    context.lineTo(x+10, y+10);
     context.fillStyle = fillStyle
-    context.fillRect(x, y, 10.0, 2.0); // mouse
-    context.fillRect(x + 3, y-3, 2.0, 6.0); // mouse
+    context.fill();
+}
+
+private fun paintDeathCircle(x: Double, y: Double, fillStyle: String, diameter: Double) {
+    context.beginPath();
+    context.arc(x, y, diameter/2, 0.0, 2 * PI, false);
+    context.fillStyle = fillStyle
+    context.fill();
 }
 
