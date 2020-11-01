@@ -45,9 +45,10 @@ fun main() {
                     log.error("onClosedException ${closeReason.await()} : ${call.request.origin.host}", e)
                 } catch (e: Throwable) {
                     log.error("onError: ${call.request.origin.host}", e)
+                } finally {
+                    log.info("player disconnected ${call.request.origin.host}")
+                    gameServer.onClose(this)
                 }
-                log.info("player disconnected ${call.request.origin.host}")
-                gameServer.onClose(this)
             }
         }
 

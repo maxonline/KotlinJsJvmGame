@@ -2,7 +2,7 @@ package maxonline.shared
 import kotlinx.serialization.*
 
 @Serializable
-data class GameMessage (val players:Collection<Player>, val yourId: Short)
+data class GameMessage (val players:ArrayList<Player>? = null, val yourId: Short? = null)
 
 @Serializable
 data class Player(
@@ -16,4 +16,7 @@ data class Player(
 )
 
 @Serializable
-data class PlayerMessage (val player:Player)
+data class PlayerMessage (
+    val player: Player? = null,
+    val clicked: Boolean? = null,
+)

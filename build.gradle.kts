@@ -7,7 +7,7 @@ plugins {
 }
 group = "maxonline"
 
-val ktor_version = "1.4.0"
+val ktor_version = "1.4.1"
 val kotlinx_version = "0.7.2"
 val logback_version = "1.2.3"
 val serialization_version = "1.0.0-RC"
@@ -26,7 +26,7 @@ kotlin {
         }
         withJava()
     }
-    js(IR) {
+    js() {
         browser {
             binaries.executable()
             webpackTask {
@@ -54,6 +54,7 @@ kotlin {
                 implementation("io.ktor:ktor-utils:$ktor_version")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:$serialization_version")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:$serialization_version")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:$serialization_version")
             }
         }
         val commonTest by getting {
@@ -71,6 +72,7 @@ kotlin {
                 implementation("ch.qos.logback:logback-classic:$logback_version")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:$serialization_version")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf-jvm:$serialization_version")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor-jvm:$serialization_version")
 
             }
         }
@@ -86,6 +88,7 @@ kotlin {
 
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-core-js:$serialization_version")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf-js:$serialization_version")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor-js:$serialization_version")
             }
         }
         val jsTest by getting {

@@ -17,12 +17,15 @@ import org.w3c.files.Blob
 import org.w3c.files.FileReader
 
 class Network(server: String, onMessage: (GameMessage) -> Unit) {
-    val webSocket = WebSocket(server)
+    private val webSocket = WebSocket(server)
+
+    private val format = ProtoBuf { encodeDefaults = false }
+    //private val format = Cbor { encodeDefaults = true }
 
     init {
         webSocket.onmessage = { messageEvent ->
             messageEvent.readBytes { bytes ->
-                val message = ProtoBuf.decodeFromByteArray<GameMessage>(bytes)
+                val message = format.decodeFromByteArray<GameMessage>(bytes)
                 onMessage(message)
             }
         }
@@ -51,7 +54,8 @@ class Network(server: String, onMessage: (GameMessage) -> Unit) {
 
     fun sendMessage(playerMessage: PlayerMessage){
         if(webSocket.readyState == WebSocket.OPEN){
-            val bytes = ProtoBuf.encodeToByteArray(playerMessage)
+
+            val bytes = format.encodeToByteArray(playerMessage)
             webSocket.send(Int8Array(bytes.toTypedArray()))
         }
     }

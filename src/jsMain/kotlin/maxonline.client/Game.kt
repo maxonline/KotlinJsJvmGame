@@ -16,6 +16,8 @@ val network = Network("ws://" + document.location?.host) { onMessage(it) }
 var me: Player = Player(0, 0, 0, 0, 0, 0, 0)
 var players: Collection<Player> = ArrayList()
 
+var myId: Short? = null;
+
 var lastSendTimestamp = 0.0;
 
 @ExperimentalUnsignedTypes
@@ -25,7 +27,11 @@ fun main() {
 
 
     canvas.onmousedown = {
-        canvas.asDynamic().requestPointerLock()
+        if (document.asDynamic().pointerLockElement != null) {
+            network.sendMessage(PlayerMessage(clicked = true))
+        } else {
+            canvas.asDynamic().requestPointerLock()
+        }
     }
 
     canvas.onmousemove = {
@@ -47,9 +53,13 @@ fun sendState() {
 }
 
 fun onMessage(gameMessage: GameMessage) {
-    val myId = gameMessage.yourId
-    me = gameMessage.players.first { it.playerId == myId }.copy(x = me.x, y = me.y)
-    players = gameMessage.players.filterNot { it.playerId == myId }
+    if (gameMessage.yourId != null) {
+         myId = gameMessage.yourId
+    }
+    if (gameMessage.players != null) {
+        me = gameMessage.players.first { it.playerId == myId }.copy(x = me.x, y = me.y)
+        players = gameMessage.players.filterNot { it.playerId == myId }
+    }
 }
 
 
@@ -75,7 +85,7 @@ fun loop() {
         paintMouse(
             it.x.toDouble(),
             it.y.toDouble(),
-            "rgba(${it.red.toUByte()} ,${it.green.toUByte()} ,${it.blue.toUByte()}, 0.5 )"
+            "rgba(${it.red.toUByte()} ,${it.green.toUByte()} ,${it.blue.toUByte()}, 0.8 )"
         )
 
     }
@@ -90,6 +100,6 @@ fun loop() {
 private fun paintMouse(x: Double, y: Double, fillStyle: String) {
     context.fillStyle = fillStyle
     context.fillRect(x, y, 10.0, 2.0); // mouse
-    context.fillRect(x + 3, y, 2.0, 5.0); // mouse
+    context.fillRect(x + 3, y-3, 2.0, 6.0); // mouse
 }
 
