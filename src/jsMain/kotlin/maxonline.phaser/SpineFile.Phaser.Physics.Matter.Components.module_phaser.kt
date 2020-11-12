@@ -100,11 +100,11 @@ external interface Transform {
     var scaleY: Number
     var angle: Number
     var rotation: Number
-    fun setPosition(x: Number = definedExternally, y: Number = definedExternally): Transform /* this */
-    fun setRotation(radians: Number = definedExternally): Transform /* this */
+    fun setPosition(x: Number, y: Number): Transform /* this */
+    fun setRotation(radians: Number): Transform /* this */
     fun setFixedRotation(): Transform /* this */
-    fun setAngle(degrees: Number = definedExternally): Transform /* this */
-    fun setScale(x: Number = definedExternally, y: Number = definedExternally, point: Vector2 = definedExternally): Transform /* this */
+    fun setAngle(degrees: Number): Transform /* this */
+    fun setScale(x: Number, y: Number, point: Vector2): Transform /* this */
 }
 
 external interface Velocity {

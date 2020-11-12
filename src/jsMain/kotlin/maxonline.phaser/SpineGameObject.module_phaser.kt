@@ -38,7 +38,15 @@ import Phaser.GameObjects.Components.Transform
 import Phaser.GameObjects.Components.Visible
 import Phaser.Types.GameObjects.GameObjectConfig
 
-external open class SpineGameObject(scene: Scene, pluginManager: SpinePlugin, x: Number, y: Number, key: String = definedExternally, animationName: String = definedExternally, loop: Boolean = definedExternally) : GameObject, Omit<ComputedSize, String /* "setSize" */>, Depth, Flip, ScrollFactor, Transform, Visible {
+external open class SpineGameObject(
+    scene: Scene,
+    pluginManager: SpinePlugin,
+    x: Number,
+    y: Number,
+    key: String = definedExternally,
+    animationName: String = definedExternally,
+    loop: Boolean = definedExternally
+) : GameObject, Depth, Flip, ScrollFactor, Transform, Visible {
     open var alpha: Number
     override var angle: Number
     open var blendMode: Number

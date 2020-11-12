@@ -70,11 +70,11 @@ external interface JSONGameObject {
     var x: Number
     var y: Number
     var scale: Any?
-    var scale.x: Number
-    var scale.y: Number
+//    var scale.x: Number
+//    var scale.y: Number
     var origin: Any?
-    var origin.x: Number
-    var origin.y: Number
+//    var origin.x: Number
+//    var origin.y: Number
     var flipX: Boolean
     var flipY: Boolean
     var rotation: Number

@@ -93,75 +93,75 @@ external interface GroupCreateConfig {
     var setXY: Any?
         get() = definedExternally
         set(value) = definedExternally
-    var setXY.x: Number?
-        get() = definedExternally
-        set(value) = definedExternally
-    var setXY.y: Number?
-        get() = definedExternally
-        set(value) = definedExternally
-    var setXY.stepX: Number?
-        get() = definedExternally
-        set(value) = definedExternally
-    var setXY.stepY: Number?
-        get() = definedExternally
-        set(value) = definedExternally
+//    var setXY.x: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var setXY.y: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var setXY.stepX: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var setXY.stepY: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
     var setRotation: Any?
         get() = definedExternally
         set(value) = definedExternally
-    var setRotation.value: Number?
-        get() = definedExternally
-        set(value) = definedExternally
-    var setRotation.step: Number?
-        get() = definedExternally
-        set(value) = definedExternally
+//    var setRotation.value: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var setRotation.step: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
     var setScale: Any?
         get() = definedExternally
         set(value) = definedExternally
-    var setScale.x: Number?
-        get() = definedExternally
-        set(value) = definedExternally
-    var setScale.y: Number?
-        get() = definedExternally
-        set(value) = definedExternally
-    var setScale.stepX: Number?
-        get() = definedExternally
-        set(value) = definedExternally
-    var setScale.stepY: Number?
-        get() = definedExternally
-        set(value) = definedExternally
+//    var setScale.x: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var setScale.y: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var setScale.stepX: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var setScale.stepY: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
     var setAlpha: Any?
         get() = definedExternally
         set(value) = definedExternally
-    var setAlpha.value: Number?
-        get() = definedExternally
-        set(value) = definedExternally
-    var setAlpha.step: Number?
-        get() = definedExternally
-        set(value) = definedExternally
+//    var setAlpha.value: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var setAlpha.step: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
     var setDepth: Any?
         get() = definedExternally
         set(value) = definedExternally
-    var setDepth.value: Number?
-        get() = definedExternally
-        set(value) = definedExternally
-    var setDepth.step: Number?
-        get() = definedExternally
-        set(value) = definedExternally
+//    var setDepth.value: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var setDepth.step: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
     var setScrollFactor: Any?
         get() = definedExternally
         set(value) = definedExternally
-    var setScrollFactor.x: Number?
-        get() = definedExternally
-        set(value) = definedExternally
-    var setScrollFactor.y: Number?
-        get() = definedExternally
-        set(value) = definedExternally
-    var setScrollFactor.stepX: Number?
-        get() = definedExternally
-        set(value) = definedExternally
-    var setScrollFactor.stepY: Number?
-        get() = definedExternally
-        set(value) = definedExternally
+//    var setScrollFactor.x: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var setScrollFactor.y: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var setScrollFactor.stepX: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var setScrollFactor.stepY: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
     var hitArea: Any?
         get() = definedExternally
         set(value) = definedExternally

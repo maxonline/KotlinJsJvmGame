@@ -230,6 +230,7 @@ external open class Image : Phaser.GameObjects.Image, Acceleration, Angular, Bou
     override fun setImmovable(value: Boolean): Image /* this */
     override fun setMass(value: Number): Image /* this */
     override fun setOffset(x: Number, y: Number): Image /* this */
+    override fun setSize(width: Number, height: Number, center: Boolean): Size
     override fun setBodySize(width: Number, height: Number, center: Boolean): Image /* this */
     override fun setCircle(radius: Number, offsetX: Number, offsetY: Number): Image /* this */
     override fun setVelocity(x: Number, y: Number): Image /* this */
@@ -575,6 +576,7 @@ external open class Sprite : Phaser.GameObjects.Sprite, Acceleration, Angular, B
     override fun setImmovable(value: Boolean): Sprite /* this */
     override fun setMass(value: Number): Sprite /* this */
     override fun setOffset(x: Number, y: Number): Sprite /* this */
+    override fun setSize(width: Number, height: Number, center: Boolean): Size
     override fun setBodySize(width: Number, height: Number, center: Boolean): Sprite /* this */
     override fun setCircle(radius: Number, offsetX: Number, offsetY: Number): Sprite /* this */
     override fun setVelocity(x: Number, y: Number): Sprite /* this */

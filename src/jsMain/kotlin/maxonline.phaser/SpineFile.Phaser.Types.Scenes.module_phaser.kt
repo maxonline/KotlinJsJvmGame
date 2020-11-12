@@ -35,9 +35,9 @@ external interface CreateSceneFromObjectConfig {
     var extend: Any?
         get() = definedExternally
         set(value) = definedExternally
-    var extend.data: Any?
-        get() = definedExternally
-        set(value) = definedExternally
+//    var extend.data: Any?
+//        get() = definedExternally
+//        set(value) = definedExternally
 }
 
 typealias SceneCreateCallback = (data: Any?) -> Unit

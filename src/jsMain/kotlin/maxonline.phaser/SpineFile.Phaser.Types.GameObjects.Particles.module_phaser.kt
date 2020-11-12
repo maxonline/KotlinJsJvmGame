@@ -260,12 +260,12 @@ external interface ParticleEmitterConfig {
     var followOffset: Any?
         get() = definedExternally
         set(value) = definedExternally
-    var followOffset.x: Number?
-        get() = definedExternally
-        set(value) = definedExternally
-    var followOffset.y: Number?
-        get() = definedExternally
-        set(value) = definedExternally
+//    var followOffset.x: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var followOffset.y: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
     var frame: dynamic /* Number? | Array<Number>? | String? | Array<String>? | Phaser.Textures.Frame? | Array<Phaser.Textures.Frame>? | Phaser.Types.GameObjects.Particles.ParticleEmitterFrameConfig? */
         get() = definedExternally
         set(value) = definedExternally

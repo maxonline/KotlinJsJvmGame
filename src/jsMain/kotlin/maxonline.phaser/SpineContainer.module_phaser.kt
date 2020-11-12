@@ -34,7 +34,7 @@ import Phaser.GameObjects.Components.Visible
 import Phaser.Types.GameObjects.GameObjectConfig
 
 external open class SpineContainer(scene: Scene, pluginManager: SpinePlugin, x: Number = definedExternally, y: Number = definedExternally, children: Array<SpineGameObject> = definedExternally) : Container, AlphaSingle, BlendMode, ComputedSize, Depth, Mask, Transform, Visible {
-    override var list: Array<SpineGameObject>
+    //override var list: Array<SpineGameObject>
     override var exclusive: Boolean
     override var maxSize: Number
     override var position: Number
@@ -112,10 +112,10 @@ external open class SpineContainer(scene: Scene, pluginManager: SpinePlugin, x: 
     override fun iterate(callback: Function<*>, context: Any?, vararg args: Any): SpineContainer /* this */
     override fun setScrollFactor(x: Number, y: Number, updateChildren: Boolean): SpineContainer /* this */
     override var length: Number
-    override var first: SpineGameObject
-    override var last: SpineGameObject
-    override var next: SpineGameObject
-    override var previous: SpineGameObject
+    //override var first: SpineGameObject
+    //override var last: SpineGameObject
+    //override var next: SpineGameObject
+    //override var previous: SpineGameObject
     override fun preDestroy()
     override fun clearAlpha(): SpineContainer /* this */
     override fun setAlpha(value: Number): SpineContainer /* this */

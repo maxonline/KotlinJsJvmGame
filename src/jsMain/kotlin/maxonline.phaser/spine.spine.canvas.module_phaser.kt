@@ -20,32 +20,7 @@ import spine.TextureWrap
 import spine.Texture
 import spine.Skeleton
 
-external open class AssetManager(pathPrefix: String = definedExternally) : spine.AssetManager
 
-external open class CanvasTexture(image: HTMLImageElement) : Texture {
-    override fun setFilters(minFilter: TextureFilter, magFilter: TextureFilter)
-    override fun setWraps(uWrap: TextureWrap, vWrap: TextureWrap)
-    override fun dispose()
-}
-
-external open class SkeletonRenderer(context: CanvasRenderingContext2D) {
-    open var ctx: Any
-    open var triangleRendering: Boolean
-    open var debugRendering: Boolean
-    open var vertices: Any
-    open var tempColor: Any
-    open fun draw(skeleton: Skeleton)
-    open var drawImages: Any
-    open var drawTriangles: Any
-    open var drawTriangle: Any
-    open var computeRegionVertices: Any
-    open var computeMeshVertices: Any
-
-    companion object {
-        var QUAD_TRIANGLES: Array<Number>
-        var VERTEX_SIZE: Number
-    }
-}
 
 external open class AssetManager(pathPrefix: String = definedExternally) : spine.AssetManager
 

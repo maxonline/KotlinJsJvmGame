@@ -124,6 +124,7 @@ external open class BaseCamera(x: Number, y: Number, width: Number, height: Numb
     open var displayWidth: Number
     open var displayHeight: Number
     override fun clearAlpha(): BaseCamera /* this */
+    override fun setAlpha(topLeft: Number, topRight: Number, bottomLeft: Number, bottomRight: Number): Alpha
     override var alphaTopLeft: Number
     override var alphaTopRight: Number
     override var alphaBottomLeft: Number

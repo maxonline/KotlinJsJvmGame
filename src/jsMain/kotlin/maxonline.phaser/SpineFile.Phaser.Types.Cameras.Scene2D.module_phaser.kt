@@ -54,18 +54,18 @@ external interface CameraConfig {
     var bounds: Any?
         get() = definedExternally
         set(value) = definedExternally
-    var bounds.x: Number?
-        get() = definedExternally
-        set(value) = definedExternally
-    var bounds.y: Number?
-        get() = definedExternally
-        set(value) = definedExternally
-    var bounds.width: Number?
-        get() = definedExternally
-        set(value) = definedExternally
-    var bounds.height: Number?
-        get() = definedExternally
-        set(value) = definedExternally
+//    var bounds.x: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var bounds.y: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var bounds.width: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var bounds.height: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
 }
 
 typealias CameraFadeCallback = (camera: Camera, progress: Number) -> Unit

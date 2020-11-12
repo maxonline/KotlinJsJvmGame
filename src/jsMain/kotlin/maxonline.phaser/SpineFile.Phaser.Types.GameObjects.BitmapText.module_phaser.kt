@@ -107,14 +107,14 @@ external interface LocalBitmapTextSize {
 
 external interface RetroFontConfig {
     var image: String
-    var offset.x: Number
-    var offset.y: Number
+    //var offset.x: Number
+    //var offset.y: Number
     var width: Number
     var height: Number
     var chars: String
     var charsPerRow: Number
-    var spacing.x: Number
-    var spacing.y: Number
+    //var spacing.x: Number
+    //var spacing.y: Number
     var lineSpacing: Number
 }
 

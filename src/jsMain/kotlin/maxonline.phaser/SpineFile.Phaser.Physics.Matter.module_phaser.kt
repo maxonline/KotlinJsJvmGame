@@ -423,10 +423,12 @@ external open class Image : Phaser.GameObjects.Image, Bounce, Collision, Force, 
     override var scaleY: Number
     override var angle: integer
     override var rotation: Number
+    override fun setPosition(x: Number, y: Number): Transform
     override fun setPosition(x: Number, y: Number, z: Number, w: Number): Image /* this */
     override fun setRandomPosition(x: Number, y: Number, width: Number, height: Number): Image /* this */
     override fun setRotation(radians: Number): Image /* this */
     override fun setAngle(degrees: Number): Image /* this */
+    override fun setScale(x: Number, y: Number, point: Vector2): Transform
     override fun setScale(x: Number, y: Number): Image /* this */
     override fun setX(value: Number): Image /* this */
     override fun setY(value: Number): Image /* this */
@@ -751,10 +753,12 @@ external open class Sprite : Phaser.GameObjects.Sprite, Bounce, Collision, Force
     override var scaleY: Number
     override var angle: integer
     override var rotation: Number
+    override fun setPosition(x: Number, y: Number): Transform
     override fun setPosition(x: Number, y: Number, z: Number, w: Number): Sprite /* this */
     override fun setRandomPosition(x: Number, y: Number, width: Number, height: Number): Sprite /* this */
     override fun setRotation(radians: Number): Sprite /* this */
     override fun setAngle(degrees: Number): Sprite /* this */
+    override fun setScale(x: Number, y: Number, point: Vector2): Transform
     override fun setScale(x: Number, y: Number): Sprite /* this */
     override fun setX(value: Number): Sprite /* this */
     override fun setY(value: Number): Sprite /* this */
@@ -824,7 +828,7 @@ external open class TileBody(world: World, tile: Tile, options: MatterTileOption
     open fun setFromTileCollision(options: MatterBodyTileOptions = definedExternally): TileBody
     open fun setBody(body: BodyType, addToWorld: Boolean = definedExternally): TileBody
     open fun removeBody(): TileBody
-    open fun destroy(): TileBody
+    override fun destroy(): TileBody
     override fun setBounce(value: Number): GameObject
     override fun setCollisionCategory(value: Number): GameObject
     override fun setCollisionGroup(value: Number): GameObject

@@ -142,12 +142,12 @@ external interface MatterBodyRenderConfig {
     var sprite: Any?
         get() = definedExternally
         set(value) = definedExternally
-    var sprite.xOffset: Number?
-        get() = definedExternally
-        set(value) = definedExternally
-    var sprite.yOffset: Number?
-        get() = definedExternally
-        set(value) = definedExternally
+//    var sprite.xOffset: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var sprite.yOffset: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
 }
 
 external interface MatterBodyTileOptions {
@@ -523,33 +523,33 @@ external interface MatterWorldConfig {
     var setBounds: dynamic /* Any? | Boolean? */
         get() = definedExternally
         set(value) = definedExternally
-    var setBounds.x: Number?
-        get() = definedExternally
-        set(value) = definedExternally
-    var setBounds.y: Number?
-        get() = definedExternally
-        set(value) = definedExternally
-    var setBounds.width: Number?
-        get() = definedExternally
-        set(value) = definedExternally
-    var setBounds.height: Number?
-        get() = definedExternally
-        set(value) = definedExternally
-    var setBounds.thickness: Number?
-        get() = definedExternally
-        set(value) = definedExternally
-    var setBounds.left: Boolean?
-        get() = definedExternally
-        set(value) = definedExternally
-    var setBounds.right: Boolean?
-        get() = definedExternally
-        set(value) = definedExternally
-    var setBounds.top: Boolean?
-        get() = definedExternally
-        set(value) = definedExternally
-    var setBounds.bottom: Boolean?
-        get() = definedExternally
-        set(value) = definedExternally
+//    var setBounds.x: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var setBounds.y: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var setBounds.width: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var setBounds.height: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var setBounds.thickness: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var setBounds.left: Boolean?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var setBounds.right: Boolean?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var setBounds.top: Boolean?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var setBounds.bottom: Boolean?
+//        get() = definedExternally
+//        set(value) = definedExternally
     var positionIterations: Number?
         get() = definedExternally
         set(value) = definedExternally
@@ -562,21 +562,21 @@ external interface MatterWorldConfig {
     var enableSleeping: Boolean?
         get() = definedExternally
         set(value) = definedExternally
-    var timing.timestamp: Number?
-        get() = definedExternally
-        set(value) = definedExternally
-    var timing.timeScale: Number?
-        get() = definedExternally
-        set(value) = definedExternally
-    var plugins.attractors: Boolean?
-        get() = definedExternally
-        set(value) = definedExternally
-    var plugins.wrap: Boolean?
-        get() = definedExternally
-        set(value) = definedExternally
-    var plugins.collisionevents: Boolean?
-        get() = definedExternally
-        set(value) = definedExternally
+//    var timing.timestamp: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var timing.timeScale: Number?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var plugins.attractors: Boolean?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var plugins.wrap: Boolean?
+//        get() = definedExternally
+//        set(value) = definedExternally
+//    var plugins.collisionevents: Boolean?
+//        get() = definedExternally
+//        set(value) = definedExternally
     var enabled: Boolean?
         get() = definedExternally
         set(value) = definedExternally
