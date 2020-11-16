@@ -88,10 +88,10 @@ external interface FPSConfig {
 }
 
 external interface GameConfig {
-    var width: dynamic /* integer? | String? */
+    var width: integer?
         get() = definedExternally
         set(value) = definedExternally
-    var height: dynamic /* integer? | String? */
+    var height: integer?
         get() = definedExternally
         set(value) = definedExternally
     var zoom: Number?
@@ -103,7 +103,7 @@ external interface GameConfig {
     var type: Number?
         get() = definedExternally
         set(value) = definedExternally
-    var parent: dynamic /* HTMLElement? | String? */
+    var parent: HTMLElement? /* HTMLElement? | String? */
         get() = definedExternally
         set(value) = definedExternally
     var canvas: HTMLCanvasElement?
@@ -118,7 +118,7 @@ external interface GameConfig {
     var context: CanvasRenderingContext2D?
         get() = definedExternally
         set(value) = definedExternally
-    var scene: dynamic /* Phaser.Scene? | Array<Phaser.Scene>? | Phaser.Types.Scenes.SettingsConfig? | Array<Phaser.Types.Scenes.SettingsConfig>? | Phaser.Types.Scenes.CreateSceneFromObjectConfig? | Array<Phaser.Types.Scenes.CreateSceneFromObjectConfig>? | Function<*>? | Array<Function<*>>? */
+    var scene: Phaser.Scene? /* Phaser.Scene? | Array<Phaser.Scene>? | Phaser.Types.Scenes.SettingsConfig? | Array<Phaser.Types.Scenes.SettingsConfig>? | Phaser.Types.Scenes.CreateSceneFromObjectConfig? | Array<Phaser.Types.Scenes.CreateSceneFromObjectConfig>? | Function<*>? | Array<Function<*>>? */
         get() = definedExternally
         set(value) = definedExternally
     var seed: Array<String>?

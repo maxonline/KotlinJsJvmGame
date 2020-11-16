@@ -26,7 +26,7 @@ fun main() {
                         title("KotlinJsJvmGame")
                     }
                     body {
-                        canvas { id = "gameCanvas" }
+                        div { id = "gameContainer" }
                         script(src = "/static/KotlinJsJvmGame.js") {}
                     }
                 }
