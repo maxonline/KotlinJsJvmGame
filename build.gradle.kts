@@ -45,6 +45,7 @@ kotlin {
             dceTask {
                 dceOptions.devMode = true
             }
+            useCommonJs()
         }
     }
     sourceSets {

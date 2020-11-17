@@ -14,7 +14,6 @@ import org.w3c.performance.*
 import org.w3c.workers.*
 import org.w3c.xhr.*
 import Two.ConstructorParams
-import Two.Types
 import Two.Group
 import Two.Line
 import Two.Rectangle
@@ -26,11 +25,9 @@ import Two.Polygon
 import Two.ArcSegment
 import Two.Path
 import Two.Vector
-import Two.Utils.Collection
 import Two.Anchor
 import Two.BoundingClientRect
 import tsstdlib.Record
-import Two.Commands
 import Two.`T$0`
 import Two.Stop
 import Two.LinearGradient
@@ -39,7 +36,7 @@ import Two.Text
 
 @JsModule("definitely-typed")
 external open class Two(params: ConstructorParams = definedExternally) {
-    open var type: Types
+    open var type: String
     open var frameCount: Number
     open var timeDelta: Number
     open var width: Number
@@ -77,7 +74,7 @@ external open class Two(params: ConstructorParams = definedExternally) {
     open fun bind(event: String, callback: (args: Any) -> Unit): Two /* this */
     open fun unbind(event: String?, callback: ((args: Any) -> Unit)?): Two /* this */
     interface ConstructorParams {
-        var type: Types?
+        var type: String?
             get() = definedExternally
             set(value) = definedExternally
         var width: Number?
@@ -203,7 +200,6 @@ external open class Two(params: ConstructorParams = definedExternally) {
         var left: Vector
     }
     open class Anchor : Vector {
-        constructor(x: Number, y: Number, lx: Number, ly: Number, rx: Number, ry: Number, command: Commands)
         constructor(x: Number, y: Number, lx: Number, ly: Number, rx: Number, ry: Number, command: String)
         open var command: dynamic /* Commands | String */
         open var controls: `T$0`
