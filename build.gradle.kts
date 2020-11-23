@@ -27,11 +27,13 @@ kotlin {
         withJava()
     }
     js() {
+        useCommonJs()
         browser {
             binaries.executable()
             webpackTask {
                 cssSupport.enabled = true
                 mode = org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig.Mode.DEVELOPMENT
+                outputFileName = "KotlinJsJvmGame.js"
             }
             runTask {
                 cssSupport.enabled = true
@@ -45,7 +47,6 @@ kotlin {
             dceTask {
                 dceOptions.devMode = true
             }
-            useCommonJs()
         }
     }
     sourceSets {
@@ -102,9 +103,7 @@ kotlin {
 application {
     mainClassName = "maxonline.server.MainKt"
 }
-tasks.getByName<KotlinWebpack>("jsBrowserProductionWebpack") {
-    outputFileName = "KotlinJsJvmGame.js"
-}
+
 tasks.getByName<Jar>("jvmJar") {
     dependsOn(tasks.getByName("jsBrowserProductionWebpack"))
     val jsBrowserProductionWebpack = tasks.getByName<KotlinWebpack>("jsBrowserProductionWebpack")

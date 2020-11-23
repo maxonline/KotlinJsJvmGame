@@ -1,42 +1,18 @@
-@file:Suppress("INTERFACE_WITH_SUPERCLASS", "OVERRIDING_FINAL_MEMBER", "RETURN_TYPE_MISMATCH_ON_OVERRIDE", "CONFLICTING_OVERLOADS")
+@file:Suppress(
+    "INTERFACE_WITH_SUPERCLASS",
+    "OVERRIDING_FINAL_MEMBER",
+    "RETURN_TYPE_MISMATCH_ON_OVERRIDE",
+    "CONFLICTING_OVERLOADS"
+)
 
-import kotlin.js.*
-import org.khronos.webgl.*
-import org.w3c.dom.*
-import org.w3c.dom.events.*
-import org.w3c.dom.parsing.*
-import org.w3c.dom.svg.*
-import org.w3c.dom.url.*
-import org.w3c.fetch.*
-import org.w3c.files.*
-import org.w3c.notifications.*
-import org.w3c.performance.*
-import org.w3c.workers.*
-import org.w3c.xhr.*
-import Two.ConstructorParams
-import Two.Group
-import Two.Line
-import Two.Rectangle
-import Two.RoundedRectangle
-import Two.Circle
-import Two.Ellipse
-import Two.Star
-import Two.Polygon
-import Two.ArcSegment
-import Two.Path
-import Two.Vector
-import Two.Anchor
-import Two.BoundingClientRect
-import tsstdlib.Record
-import Two.`T$0`
-import Two.Stop
-import Two.LinearGradient
-import Two.RadialGradient
-import Two.Text
 
-@JsModule("definitely-typed")
-external open class Two(params: ConstructorParams = definedExternally) {
-    open var type: String
+import org.w3c.dom.HTMLElement
+import org.w3c.dom.svg.SVGElement
+typealias Record<K, T> = Any
+
+
+external open class Two(params: dynamic) {
+    open var type: dynamic /* Types */
     open var frameCount: Number
     open var timeDelta: Number
     open var width: Number
@@ -61,7 +37,15 @@ external open class Two(params: ConstructorParams = definedExternally) {
     open fun makeEllipse(x: Number, y: Number, width: Number, height: Number): Ellipse
     open fun makeStar(ox: Number, oy: Number, or: Number, ir: Number, sides: Number): Star
     open fun makePolygon(x: Number, y: Number, radius: Number, sides: Number): Polygon
-    open fun makeArcSegment(ox: Number, oy: Number, ir: Number, or: Number, sa: Number, ea: Number, res: Number = definedExternally): ArcSegment
+    open fun makeArcSegment(
+        ox: Number,
+        oy: Number,
+        ir: Number,
+        or: Number,
+        sa: Number,
+        ea: Number,
+        res: Number = definedExternally
+    ): ArcSegment
     open fun makeCurve(vararg coords: Any /* Number | Boolean */): Path
     open fun makeCurve(points: Array<Vector>, open: Boolean = definedExternally): Path
     open fun makeCurve(points: Array<Vector>): Path
@@ -73,29 +57,12 @@ external open class Two(params: ConstructorParams = definedExternally) {
     open fun interpret(svgNode: SVGElement): Group
     open fun bind(event: String, callback: (args: Any) -> Unit): Two /* this */
     open fun unbind(event: String?, callback: ((args: Any) -> Unit)?): Two /* this */
-    interface ConstructorParams {
-        var type: String?
-            get() = definedExternally
-            set(value) = definedExternally
-        var width: Number?
-            get() = definedExternally
-            set(value) = definedExternally
-        var height: Number?
-            get() = definedExternally
-            set(value) = definedExternally
-        var autostart: Boolean?
-            get() = definedExternally
-            set(value) = definedExternally
-        var fullscreen: Boolean?
-            get() = definedExternally
-            set(value) = definedExternally
-        var ratio: Number?
-            get() = definedExternally
-            set(value) = definedExternally
-    }
+
     open class Error(message: String) {
         open var message: String
     }
+
+    @JsNonModule
     open class Path(vertices: Array<Vector>, closed: Boolean, curved: Boolean, manual: Boolean = definedExternally) {
         open var id: Number
         open var stroke: dynamic /* String | LinearGradient | RadialGradient */
@@ -130,14 +97,38 @@ external open class Two(params: ConstructorParams = definedExternally) {
             fun MakeObservable(obj: Any): Any
         }
     }
+
     open class Line(x1: Number, y1: Number, x2: Number, y2: Number) : Path
     open class Rectangle(x: Number, y: Number, width: Number, height: Number) : Path
-    open class RoundedRectangle(x: Number, y: Number, width: Number, height: Number, radius: Number = definedExternally) : Path
+    open class RoundedRectangle(
+        x: Number,
+        y: Number,
+        width: Number,
+        height: Number,
+        radius: Number = definedExternally
+    ) : Path
+
     open class Ellipse(x: Number, y: Number, width: Number, height: Number) : Path
-    open class Star(ox: Number, oy: Number, or: Number, ir: Number = definedExternally, sides: Number = definedExternally) : Path
+    open class Star(
+        ox: Number,
+        oy: Number,
+        or: Number,
+        ir: Number = definedExternally,
+        sides: Number = definedExternally
+    ) : Path
+
     open class Polygon(x: Number, y: Number, radius: Number, sides: Number = definedExternally) : Path
     open class Circle(x: Number, y: Number, radius: Number) : Path
-    open class ArcSegment(ox: Number, oy: Number, ir: Number, or: Number, sa: Number, ea: Number, res: Number = definedExternally) : Path
+    open class ArcSegment(
+        ox: Number,
+        oy: Number,
+        ir: Number,
+        or: Number,
+        sa: Number,
+        ea: Number,
+        res: Number = definedExternally
+    ) : Path
+
     open class Group {
         open var id: String
         open var stroke: dynamic /* String | LinearGradient | RadialGradient */
@@ -168,6 +159,7 @@ external open class Two(params: ConstructorParams = definedExternally) {
             fun MakeObservable(obj: Any): Any
         }
     }
+
     interface BoundingClientRect : Record<String /* "top" | "left" | "right" | "bottom" | "width" | "height" */, Number>
     open class Vector(x: Number, y: Number) {
         open var x: Number
@@ -195,12 +187,15 @@ external open class Two(params: ConstructorParams = definedExternally) {
         open fun lerp(v: Vector, t: Number): Vector /* this */
         open fun isZero(): Boolean
     }
+
     interface `T$0` {
         var right: Vector
         var left: Vector
     }
+
     open class Anchor : Vector {
         constructor(x: Number, y: Number, lx: Number, ly: Number, rx: Number, ry: Number, command: String)
+
         open var command: dynamic /* Commands | String */
         open var controls: `T$0`
         open fun listen(): Anchor /* this */
@@ -210,12 +205,14 @@ external open class Two(params: ConstructorParams = definedExternally) {
             fun AppendCurveProperties()
         }
     }
+
     open class Stop(offset: Number, color: String, opacity: Number) {
         open var offset: Number
         open var color: String
         open var opacity: Number
         open fun clone(): Stop /* this */
     }
+
     open class LinearGradient(x1: Number, y1: Number, x2: Number, y2: Number, stops: Array<Stop>) {
         open var left: Vector
         open var right: Vector
@@ -223,7 +220,15 @@ external open class Two(params: ConstructorParams = definedExternally) {
         open var stops: Collection<Stop>
         open fun clone(): LinearGradient /* this */
     }
-    open class RadialGradient(x: Number, y: Number, radius: Number, stops: Array<Stop>, fx: Number = definedExternally, fy: Number = definedExternally) {
+
+    open class RadialGradient(
+        x: Number,
+        y: Number,
+        radius: Number,
+        stops: Array<Stop>,
+        fx: Number = definedExternally,
+        fy: Number = definedExternally
+    ) {
         open var center: Vector
         open var radius: Number
         open var focal: Vector
@@ -231,6 +236,7 @@ external open class Two(params: ConstructorParams = definedExternally) {
         open var stops: Collection<Stop>
         open fun clone(): RadialGradient /* this */
     }
+
     open class Text(message: String, x: Number, y: Number, styles: Any = definedExternally) {
         open var value: String
         open var family: String

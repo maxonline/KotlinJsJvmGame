@@ -26,13 +26,18 @@ fun main() {
                         title("KotlinJsJvmGame")
                     }
                     body {
-                        canvas { id = "gameCanvas" }
-                        script(src = "/static/KotlinJsJvmGame.js") {}
+                        //canvas { id = "gameCanvas" }
+                        div { id = "gameContainer"}
+                        script(src = "/lib/Two.js") {}
+                        script(src = "/js/KotlinJsJvmGame.js") {}
                     }
                 }
             }
-            static("/static") {
+            static("/js") {
                 resource("KotlinJsJvmGame.js")
+            }
+            static("/") {
+                resources("static")
             }
             webSocket("/") {
                 log.info("New player connected: ${call.request.origin.host}")
