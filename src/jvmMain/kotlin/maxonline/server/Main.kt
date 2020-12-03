@@ -27,12 +27,16 @@ fun main() {
                     }
                     body {
                         div { id = "gameContainer" }
-                        script(src = "/static/KotlinJsJvmGame.js") {}
+                        script(src = "/static/phaser.js") {}
+                        script(src = "/js/KotlinJsJvmGame.js") {}
                     }
                 }
             }
-            static("/static") {
+            static("/js") {
                 resource("KotlinJsJvmGame.js")
+            }
+            static("/static") {
+                resources("static")
             }
             webSocket("/") {
                 log.info("New player connected: ${call.request.origin.host}")

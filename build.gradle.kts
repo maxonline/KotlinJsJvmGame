@@ -45,6 +45,7 @@ kotlin {
             dceTask {
                 dceOptions.devMode = true
             }
+            useCommonJs()
         }
     }
     sourceSets {
@@ -89,6 +90,7 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-core-js:$serialization_version")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf-js:$serialization_version")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor-js:$serialization_version")
+                //implementation(npm("phaser", "3.24"))
             }
         }
         val jsTest by getting {
