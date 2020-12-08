@@ -1,6 +1,13 @@
 package maxonline.client
 
 
+import com.soywiz.korge.Korge
+import com.soywiz.korge.input.onMouseDrag
+import com.soywiz.korge.view.Circle
+import com.soywiz.korge.view.center
+import com.soywiz.korge.view.xy
+import com.soywiz.korgw.GameWindow
+import com.soywiz.korim.color.Colors
 import kotlinx.browser.document
 import kotlinx.browser.window
 import maxonline.shared.DeathCircle
@@ -23,8 +30,15 @@ var myId: Short? = null;
 
 var lastSendTimestamp = 0.0;
 
+suspend fun main() = Korge(width = 1000, height = 600,virtualHeight = 600,virtualWidth = 1000, bgcolor = Colors.BURLYWOOD, targetFps = 120.0, quality = GameWindow.Quality.PERFORMANCE, debug = true) {
+    onMouseDrag {
+        val circle = Circle(radius = 20.0, fill = Colors.LIGHTGREEN).center().xy(this.globalMouseX, this.globalMouseY)
+        addChild(circle)
+    }
+}
+
 @ExperimentalUnsignedTypes
-fun main() {
+fun notMain() {
     canvas.width = 800
     canvas.height = 600
 

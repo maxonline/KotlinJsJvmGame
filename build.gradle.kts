@@ -18,6 +18,7 @@ repositories {
     maven { url = uri("https://dl.bintray.com/kotlin/ktor") }
     maven { url = uri("https://dl.bintray.com/kotlin/kotlinx") }
     maven { url = uri("https://dl.bintray.com/kotlin/kotlin-js-wrappers") }
+    maven { url = uri("https://dl.bintray.com/korlibs/korlibs/") }
 }
 kotlin {
     jvm {
@@ -89,6 +90,7 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-core-js:$serialization_version")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf-js:$serialization_version")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor-js:$serialization_version")
+                implementation("com.soywiz.korlibs.korge:korge-js:2.0.0-rc3")
             }
         }
         val jsTest by getting {
