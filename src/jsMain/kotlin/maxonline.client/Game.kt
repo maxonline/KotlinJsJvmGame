@@ -1,144 +1,126 @@
 package maxonline.client
 
 
+import com.soywiz.klock.Frequency
 import com.soywiz.korge.Korge
-import com.soywiz.korge.input.onMouseDrag
-import com.soywiz.korge.view.Circle
-import com.soywiz.korge.view.center
-import com.soywiz.korge.view.xy
+import com.soywiz.korge.input.onDown
+import com.soywiz.korge.input.onMove
+import com.soywiz.korge.view.*
 import com.soywiz.korgw.GameWindow
 import com.soywiz.korim.color.Colors
+import com.soywiz.korim.color.RGBA
 import kotlinx.browser.document
-import kotlinx.browser.window
 import maxonline.shared.DeathCircle
 import maxonline.shared.GameMessage
 import maxonline.shared.Player
 import maxonline.shared.PlayerMessage
-import org.w3c.dom.CanvasRenderingContext2D
+import org.w3c.dom.Document
+import org.w3c.dom.Element
 import org.w3c.dom.HTMLCanvasElement
-import kotlin.math.PI
 
-val canvas: HTMLCanvasElement = document.getElementById("gameCanvas") as HTMLCanvasElement
-val context: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D
 val network = Network("ws://" + document.location?.host) { onMessage(it) }
 
-var me: Player = Player(0, 0, 0, 0, 0, 0, 0)
-var players: Collection<Player> = ArrayList()
+typealias PlayerId = Short
+
+var me: GamePlayer = GamePlayer(playerId = 0, SolidRect(width = 20.0, height = 5.0, color = Colors.GREEN))
+var players: HashMap<PlayerId, GamePlayer> = HashMap()
 var deathCircles: List<DeathCircle> = ArrayList()
 
-var myId: Short? = null;
+var myId: Short? = null
+var canvas: HTMLCanvasElement? = null
+var korgeStage: Stage? = null
 
-var lastSendTimestamp = 0.0;
+suspend fun main() {
+    Korge(
+        width = 1000,
+        height = 600,
+        bgcolor = Colors.BURLYWOOD,
+        targetFps = 120.0,
+        quality = GameWindow.Quality.PERFORMANCE,
+        debug = false
+    ) {
+        korgeStage = this
 
-suspend fun main() = Korge(width = 1000, height = 600,virtualHeight = 600,virtualWidth = 1000, bgcolor = Colors.BURLYWOOD, targetFps = 120.0, quality = GameWindow.Quality.PERFORMANCE, debug = true) {
-    onMouseDrag {
-        val circle = Circle(radius = 20.0, fill = Colors.LIGHTGREEN).center().xy(this.globalMouseX, this.globalMouseY)
-        addChild(circle)
-    }
-}
 
-@ExperimentalUnsignedTypes
-fun notMain() {
-    canvas.width = 800
-    canvas.height = 600
+        val circle = Circle(radius = 20.0, fill = Colors.LIGHTGREEN).center().xy(200, 300)
 
-    canvas.onmousedown = {
-        if (document.asDynamic().pointerLockElement != null) {
-            network.sendMessage(PlayerMessage(clicked = true))
-        } else {
-            canvas.asDynamic().requestPointerLock()
+
+        addFixedUpdater(timesPerSecond = Frequency(10.0), limitCallsPerFrame = 1) {
+            if(canvas == null){
+                canvas = document.getElementsByTagName("body").item(0)?.getElementsByTagName("canvas")?.item(0) as HTMLCanvasElement
+            }
+
+            sendStateToServer()
         }
-    }
 
-    canvas.onmousemove = {
-        if (document.asDynamic().pointerLockElement != null) {
-            val x = me.x + it.asDynamic().movementX as Double
-            val y = me.y + it.asDynamic().movementY as Double
-            me = me.copy(x = x.toShort(), y = y.toShort())
-            canvas.asDynamic().requestPointerLock()
+        onDown {
+            if (document.hasPointerLock()) {
+                canvas?.requestPointerLock()
+            } else {
+                network.sendMessage(PlayerMessage(clicked = true))
+            }
+
         }
-    }
-    window.onload = {
-        loop()
+        onMove {
+            if (document.hasPointerLock()) {
+                me.view.xy(this.mouseX, this.mouseY)
+            }
+        }
+
     }
 }
 
 fun sendStateToServer() {
-    network.sendMessage(PlayerMessage(me))
-    lastSendTimestamp = window.performance.now()
+    network.sendMessage(PlayerMessage(Player(me.view.x.toShort(), me.view.y.toShort(), 0, 0, 0, 0, me.playerId)))
 }
 
 fun onMessage(gameMessage: GameMessage) {
     if (gameMessage.yourId != null) {
-         myId = gameMessage.yourId
+        myId = gameMessage.yourId
+        korgeStage?.addChild(me.view)
     }
     if (gameMessage.players != null) {
-        me = gameMessage.players.first { it.playerId == myId }.copy(x = me.x, y = me.y)
-        players = gameMessage.players.filterNot { it.playerId == myId }
+        val updatedMe = gameMessage.players.first { it.playerId == myId }
+
+        gameMessage.players.forEach {
+            if (it != updatedMe) {
+                if (players.containsKey(it.playerId)) {
+                    players[it.playerId]!!.view.xy(it.x.toInt(), it.y.toInt())
+                } else {
+                    val view = SolidRect(
+                        width = 20.0,
+                        height = 5.0,
+                        color = RGBA(it.red.toInt(), it.blue.toInt(), it.green.toInt())
+                    )
+                    korgeStage?.addChild(view)
+
+                    players[it.playerId] = GamePlayer(
+                        it.playerId,
+                        view.xy(it.x.toInt(), it.y.toInt())
+                    )
+                }
+
+            }
+        }
+        players.filter { localPlayer ->
+            gameMessage.players.find { playerFromServer -> playerFromServer.playerId == localPlayer.key } == null
+        }.run {
+            forEach {
+                korgeStage?.removeChild(it.value.view)
+                players.remove(it.key)
+            }
+        }
+
     }
 
-    if(gameMessage.deathCircles != null){
+    if (gameMessage.deathCircles != null) {
         deathCircles = gameMessage.deathCircles
     }
 }
 
+inline fun Element.requestPointerLock(): Unit = asDynamic().requestPointerLock()
+inline fun Document.hasPointerLock() = asDynamic().pointerLockElement == null
 
-fun loop() {
-    context.setTransform(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);//reset the transform matrix as it is cumulative
-    context.clearRect(
-        0.0,
-        0.0,
-        canvas.width.toDouble(),
-        canvas.height.toDouble()
-    )
+data class GamePlayer(val playerId: PlayerId, val view: View)
 
-    val x = me.x.toDouble()
-    val y = me.y.toDouble()
-    context.translate(-x + canvas.width.toDouble() / 2, -y + canvas.width.toDouble() / 2);
-
-    context.fillStyle = "black"
-    context.fillRect(100.0, 100.0, 10.0, 10.0);
-
-    paintMouse(x, y, "rgba(${me.red.toUByte()} ,${me.green.toUByte()} ,${me.blue.toUByte()}, 1 )")
-
-    players.forEach {
-        paintMouse(
-            it.x.toDouble(),
-            it.y.toDouble(),
-            "rgba(${it.red.toUByte()} ,${it.green.toUByte()} ,${it.blue.toUByte()}, 0.8 )"
-        )
-
-    }
-    deathCircles.forEach {
-        paintDeathCircle(
-            it.x.toDouble(),
-            it.y.toDouble(),
-            "rgba(${it.red.toUByte()} ,${it.green.toUByte()} ,${it.blue.toUByte()}, 0.9 )",
-            diameter =  it.diameter.toDouble(),
-        )
-
-    }
-
-    if (window.performance.now() - lastSendTimestamp > 100) {
-        sendStateToServer()
-    }
-
-    window.requestAnimationFrame { loop() }
-}
-
-private fun paintMouse(x: Double, y: Double, fillStyle: String) {
-    context.beginPath();
-    context.moveTo(x, y);
-    context.lineTo(x+15, y+2);
-    context.lineTo(x+10, y+10);
-    context.fillStyle = fillStyle
-    context.fill();
-}
-
-private fun paintDeathCircle(x: Double, y: Double, fillStyle: String, diameter: Double) {
-    context.beginPath();
-    context.arc(x, y, diameter/2, 0.0, 2 * PI, false);
-    context.fillStyle = fillStyle
-    context.fill();
-}
 
