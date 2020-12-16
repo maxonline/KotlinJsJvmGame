@@ -2,9 +2,10 @@ package maxonline.client
 
 
 import com.soywiz.klock.Frequency
+import com.soywiz.klock.milliseconds
 import com.soywiz.korge.Korge
 import com.soywiz.korge.input.onDown
-import com.soywiz.korge.input.onMove
+import com.soywiz.korge.tween.tween
 import com.soywiz.korge.view.*
 import com.soywiz.korgw.GameWindow
 import com.soywiz.korim.color.Colors
@@ -14,8 +15,6 @@ import maxonline.shared.DeathCircle
 import maxonline.shared.GameMessage
 import maxonline.shared.Player
 import maxonline.shared.PlayerMessage
-import org.w3c.dom.Document
-import org.w3c.dom.Element
 import org.w3c.dom.HTMLCanvasElement
 
 val network = Network("ws://" + document.location?.host) { onMessage(it) }
@@ -41,29 +40,27 @@ suspend fun main() {
     ) {
         korgeStage = this
 
-
-        val circle = Circle(radius = 20.0, fill = Colors.LIGHTGREEN).center().xy(200, 300)
-
-
         addFixedUpdater(timesPerSecond = Frequency(10.0), limitCallsPerFrame = 1) {
-            if(canvas == null){
-                canvas = document.getElementsByTagName("body").item(0)?.getElementsByTagName("canvas")?.item(0) as HTMLCanvasElement
+            if (canvas == null) {
+                canvas = document.getElementsByTagName("body").item(0)?.getElementsByTagName("canvas")
+                    ?.item(0) as HTMLCanvasElement
             }
 
             sendStateToServer()
         }
 
         onDown {
-            if (document.hasPointerLock()) {
+            if (document.hasPointerLock().not()) {
                 canvas?.requestPointerLock()
             } else {
                 network.sendMessage(PlayerMessage(clicked = true))
             }
-
         }
-        onMove {
+
+        canvas?.onmousemove = {
             if (document.hasPointerLock()) {
-                me.view.xy(this.mouseX, this.mouseY)
+                me.view.x += it.movementX()
+                me.view.y += it.movementY()
             }
         }
 
@@ -74,7 +71,7 @@ fun sendStateToServer() {
     network.sendMessage(PlayerMessage(Player(me.view.x.toShort(), me.view.y.toShort(), 0, 0, 0, 0, me.playerId)))
 }
 
-fun onMessage(gameMessage: GameMessage) {
+suspend fun onMessage(gameMessage: GameMessage) {
     if (gameMessage.yourId != null) {
         myId = gameMessage.yourId
         korgeStage?.addChild(me.view)
@@ -85,7 +82,8 @@ fun onMessage(gameMessage: GameMessage) {
         gameMessage.players.forEach {
             if (it != updatedMe) {
                 if (players.containsKey(it.playerId)) {
-                    players[it.playerId]!!.view.xy(it.x.toInt(), it.y.toInt())
+                    val view = players[it.playerId]!!.view
+                    view.tween(view::x[10.0, 100.0], time = 1000.milliseconds)
                 } else {
                     val view = SolidRect(
                         width = 20.0,
@@ -117,9 +115,6 @@ fun onMessage(gameMessage: GameMessage) {
         deathCircles = gameMessage.deathCircles
     }
 }
-
-inline fun Element.requestPointerLock(): Unit = asDynamic().requestPointerLock()
-inline fun Document.hasPointerLock() = asDynamic().pointerLockElement == null
 
 data class GamePlayer(val playerId: PlayerId, val view: View)
 
