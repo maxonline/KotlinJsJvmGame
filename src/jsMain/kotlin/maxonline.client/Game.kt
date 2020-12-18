@@ -1,16 +1,25 @@
 package maxonline.client
 
 
+import com.soywiz.klock.DateTime
 import com.soywiz.klock.Frequency
 import com.soywiz.klock.milliseconds
+import com.soywiz.klock.seconds
 import com.soywiz.korge.Korge
 import com.soywiz.korge.input.onDown
+import com.soywiz.korge.tween.get
 import com.soywiz.korge.tween.tween
 import com.soywiz.korge.view.*
 import com.soywiz.korgw.GameWindow
 import com.soywiz.korim.color.Colors
 import com.soywiz.korim.color.RGBA
+import com.soywiz.korio.async.launch
+import com.soywiz.korio.async.launchAsap
+import com.soywiz.korma.interpolation.Easing
 import kotlinx.browser.document
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import maxonline.shared.DeathCircle
 import maxonline.shared.GameMessage
 import maxonline.shared.Player
@@ -39,6 +48,32 @@ suspend fun main() {
         debug = false
     ) {
         korgeStage = this
+
+        val view = SolidRect(
+            width = 5.0,
+            height = 5.0,
+            color = Colors.WHITE
+        )
+        addChild(view)
+
+        GlobalScope.launch {
+            val updateJobs = HashSet<Job>()
+            while (true) {
+                delay(51)
+                updateJobs.forEach { it.cancel() }
+                updateJobs.clear()
+
+                updateJobs.add(
+                    GlobalScope.launchAsap {
+                        korgeStage.tween(view::y[view.y, view.y + 30], time = 50.milliseconds, easing = Easing.LINEAR)
+                    })
+                updateJobs.add(
+                    GlobalScope.launchAsap {
+                        korgeStage.tween(view::x[view.x, view.x + 30], time = 50.milliseconds, easing = Easing.LINEAR)
+                    })
+            }
+        }
+
 
         addFixedUpdater(timesPerSecond = Frequency(10.0), limitCallsPerFrame = 1) {
             if (canvas == null) {
@@ -71,7 +106,9 @@ fun sendStateToServer() {
     network.sendMessage(PlayerMessage(Player(me.view.x.toShort(), me.view.y.toShort(), 0, 0, 0, 0, me.playerId)))
 }
 
-suspend fun onMessage(gameMessage: GameMessage) {
+private var lastPlayersUpdate = DateTime.now().unixMillisLong
+
+fun onMessage(gameMessage: GameMessage) {
     if (gameMessage.yourId != null) {
         myId = gameMessage.yourId
         korgeStage?.addChild(me.view)
@@ -79,11 +116,35 @@ suspend fun onMessage(gameMessage: GameMessage) {
     if (gameMessage.players != null) {
         val updatedMe = gameMessage.players.first { it.playerId == myId }
 
+        val now = DateTime.now().unixMillisLong
+        val timeToNextUpdate = (now - lastPlayersUpdate)*1.1
+        lastPlayersUpdate = now
+
+
+        val updateJobs = HashSet<Job>()
+        updateJobs.forEach { it.cancel() }
+        updateJobs.clear()
+
         gameMessage.players.forEach {
-            if (it != updatedMe) {
+            //if (it != updatedMe) {
                 if (players.containsKey(it.playerId)) {
                     val view = players[it.playerId]!!.view
-                    view.tween(view::x[10.0, 100.0], time = 1000.milliseconds)
+                    //println("timetonext" + timeToNextUpdate)
+                    updateJobs.add(GlobalScope.launch {
+                        view.tween(
+                            view::y[view.y, it.y],
+                            time = timeToNextUpdate.milliseconds,
+                            easing = Easing.LINEAR
+                        )
+                    })
+
+                    updateJobs.add(GlobalScope.launch {
+                        view.tween(
+                            view::x[view.x, it.x],
+                            time = timeToNextUpdate.milliseconds,
+                            easing = Easing.LINEAR
+                        )
+                    })
                 } else {
                     val view = SolidRect(
                         width = 20.0,
@@ -98,7 +159,9 @@ suspend fun onMessage(gameMessage: GameMessage) {
                     )
                 }
 
-            }
+            //}
+
+
         }
         players.filter { localPlayer ->
             gameMessage.players.find { playerFromServer -> playerFromServer.playerId == localPlayer.key } == null
@@ -108,6 +171,7 @@ suspend fun onMessage(gameMessage: GameMessage) {
                 players.remove(it.key)
             }
         }
+
 
     }
 
