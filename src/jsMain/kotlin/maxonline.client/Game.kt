@@ -65,12 +65,9 @@ suspend fun main() {
 
                 updateJobs.add(
                     GlobalScope.launchAsap {
-                        korgeStage.tween(view::y[view.y, view.y + 30], time = 50.milliseconds, easing = Easing.LINEAR)
+                        korgeStage.tween(view::y[view.y, view.y + 30],view::x[view.x, view.x + 30], time = 50.milliseconds, easing = Easing.LINEAR)
                     })
-                updateJobs.add(
-                    GlobalScope.launchAsap {
-                        korgeStage.tween(view::x[view.x, view.x + 30], time = 50.milliseconds, easing = Easing.LINEAR)
-                    })
+
             }
         }
 
@@ -117,7 +114,7 @@ fun onMessage(gameMessage: GameMessage) {
         val updatedMe = gameMessage.players.first { it.playerId == myId }
 
         val now = DateTime.now().unixMillisLong
-        val timeToNextUpdate = (now - lastPlayersUpdate)*1.1
+        val timeToNextUpdate = (now - lastPlayersUpdate)*0.95
         lastPlayersUpdate = now
 
 
@@ -133,13 +130,6 @@ fun onMessage(gameMessage: GameMessage) {
                     updateJobs.add(GlobalScope.launch {
                         view.tween(
                             view::y[view.y, it.y],
-                            time = timeToNextUpdate.milliseconds,
-                            easing = Easing.LINEAR
-                        )
-                    })
-
-                    updateJobs.add(GlobalScope.launch {
-                        view.tween(
                             view::x[view.x, it.x],
                             time = timeToNextUpdate.milliseconds,
                             easing = Easing.LINEAR
