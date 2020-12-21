@@ -26,7 +26,7 @@ import maxonline.shared.Player
 import maxonline.shared.PlayerMessage
 import org.w3c.dom.HTMLCanvasElement
 
-val network = Network("ws://" + document.location?.host) { onMessage(it) }
+var network: Network? = null
 
 typealias PlayerId = Short
 
@@ -58,14 +58,22 @@ suspend fun main() {
 
         GlobalScope.launch {
             val updateJobs = HashSet<Job>()
+
             while (true) {
-                delay(51)
+                delay(46)
+                //println("new Tween")
                 updateJobs.forEach { it.cancel() }
                 updateJobs.clear()
 
                 updateJobs.add(
                     GlobalScope.launchAsap {
-                        korgeStage.tween(view::y[view.y, view.y + 30],view::x[view.x, view.x + 30], time = 50.milliseconds, easing = Easing.LINEAR)
+                        korgeStage.tween(
+                            view::y[view.y, view.y + 10],
+                            view::x[view.x, view.x + 10],
+                            time = 46.milliseconds,
+                            easing = Easing.LINEAR,
+                            //callback = { println("update " + it)}
+                        )
                     })
 
             }
@@ -85,7 +93,7 @@ suspend fun main() {
             if (document.hasPointerLock().not()) {
                 canvas?.requestPointerLock()
             } else {
-                network.sendMessage(PlayerMessage(clicked = true))
+                network?.sendMessage(PlayerMessage(clicked = true))
             }
         }
 
@@ -95,12 +103,13 @@ suspend fun main() {
                 me.view.y += it.movementY()
             }
         }
+        network = Network("ws://" + document.location?.host) { onMessage(it) }
 
     }
 }
 
 fun sendStateToServer() {
-    network.sendMessage(PlayerMessage(Player(me.view.x.toShort(), me.view.y.toShort(), 0, 0, 0, 0, me.playerId)))
+    network?.sendMessage(PlayerMessage(Player(me.view.x.toShort(), me.view.y.toShort(), 0, 0, 0, 0, me.playerId)))
 }
 
 private var lastPlayersUpdate = DateTime.now().unixMillisLong
@@ -114,25 +123,29 @@ fun onMessage(gameMessage: GameMessage) {
         val updatedMe = gameMessage.players.first { it.playerId == myId }
 
         val now = DateTime.now().unixMillisLong
-        val timeToNextUpdate = (now - lastPlayersUpdate)*0.95
+        val timeToNextUpdate = (now - lastPlayersUpdate)
         lastPlayersUpdate = now
 
 
         val updateJobs = HashSet<Job>()
         updateJobs.forEach { it.cancel() }
         updateJobs.clear()
+        println("new onMessage. Next Tween lenght: " + timeToNextUpdate)
 
         gameMessage.players.forEach {
             //if (it != updatedMe) {
                 if (players.containsKey(it.playerId)) {
                     val view = players[it.playerId]!!.view
                     //println("timetonext" + timeToNextUpdate)
-                    updateJobs.add(GlobalScope.launch {
-                        view.tween(
-                            view::y[view.y, it.y],
-                            view::x[view.x, it.x],
+                    updateJobs.add(GlobalScope.launchAsap {
+                        korgeStage.tween(
+                            view::y[view.y, it.y.toDouble()],
+                            view::x[view.x, it.x.toDouble()],
                             time = timeToNextUpdate.milliseconds,
-                            easing = Easing.LINEAR
+                            easing = Easing.LINEAR,
+                            callback = { ratio ->
+                                println("update for Player${it.playerId} currentPos: ${view.x} - ${view.y} ratio: $ratio")
+                            }
                         )
                     })
                 } else {
