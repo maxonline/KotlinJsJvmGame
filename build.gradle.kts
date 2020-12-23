@@ -47,6 +47,7 @@ kotlin {
                 dceOptions.devMode = true
             }
         }
+        binaries.executable()
     }
     sourceSets {
         val commonMain by getting {
