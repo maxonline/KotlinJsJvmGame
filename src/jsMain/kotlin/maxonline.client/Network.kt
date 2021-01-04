@@ -4,6 +4,7 @@ import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.encodeToByteArray
 import kotlinx.serialization.protobuf.ProtoBuf
 import maxonline.shared.GameMessage
+import maxonline.shared.HandshakeFromPlayer
 import maxonline.shared.PlayerMessage
 import org.khronos.webgl.ArrayBuffer
 import org.khronos.webgl.Int8Array
@@ -40,6 +41,7 @@ class Network(server: String, onMessage: (GameMessage) -> Unit) {
 
         webSocket.onopen = {
             println("Connected to Websocket")
+            sendMessage(PlayerMessage(handshake = HandshakeFromPlayer())) // TODO already exsisting playerId?
         }
 
         webSocket.onclose = {
@@ -52,8 +54,8 @@ class Network(server: String, onMessage: (GameMessage) -> Unit) {
 
     }
 
-    fun sendMessage(playerMessage: PlayerMessage){
-        if(webSocket.readyState == WebSocket.OPEN){
+    fun sendMessage(playerMessage: PlayerMessage) {
+        if (webSocket.readyState == WebSocket.OPEN) {
 
             val bytes = format.encodeToByteArray(playerMessage)
             webSocket.send(Int8Array(bytes.toTypedArray()))

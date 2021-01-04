@@ -8,10 +8,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.encodeToByteArray
 import kotlinx.serialization.protobuf.ProtoBuf
-import maxonline.shared.DeathCircle
-import maxonline.shared.GameMessage
-import maxonline.shared.Player
-import maxonline.shared.PlayerMessage
+import maxonline.shared.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import kotlin.concurrent.fixedRateTimer
@@ -68,17 +65,25 @@ class GameServer {
     ) {
         val playerMessage = format.decodeFromByteArray<PlayerMessage>(bytes)
 
-        if (playerMessage.player != null) {
+        if (playerMessage.handshake != null) {
             val storedPlayer = sessionToPlayers[session]
             if (storedPlayer == null) {
-                val newPlayer = createNewPlayer(playerMessage.player)
+                val newPlayer = createNewPlayer()
                 sessionToPlayers[session] = newPlayer
-                val frame = Frame.Binary(true, format.encodeToByteArray(GameMessage(yourId = newPlayer.playerId)))
+                val frame = Frame.Binary(
+                    true,
+                    format.encodeToByteArray(GameMessage(handshake = HandshakeFromServer(newPlayer)))
+                )
                 GlobalScope.launch(CoroutineName("send-single")) { session.send(frame) }
-            } else {
-                val updatedPlayer = storedPlayer.copy(x = playerMessage.player.x, y = playerMessage.player.y)
-                sessionToPlayers[session] = updatedPlayer
+                println("Sent single to " + newPlayer)
             }
+        }
+
+        if (playerMessage.player != null) {
+            val storedPlayer = sessionToPlayers[session]
+            val updatedPlayer = storedPlayer!!.copy(x = playerMessage.player.x, y = playerMessage.player.y)
+            sessionToPlayers[session] = updatedPlayer
+
         }
 
         if (playerMessage.clicked == true) {
@@ -100,10 +105,10 @@ class GameServer {
         sessionToPlayers.remove(session)
     }
 
-    private fun createNewPlayer(oldPlayer: Player): Player {
+    private fun createNewPlayer(): Player {
         return Player(
-            x = oldPlayer.x,
-            y = oldPlayer.y,
+            x = 300,
+            y = 300,
             red = random.nextBytes(1)[0],
             green = random.nextBytes(1)[0],
             blue = random.nextBytes(1)[0],

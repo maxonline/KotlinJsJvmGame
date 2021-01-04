@@ -6,9 +6,15 @@ typealias PlayerId = Short
 @Serializable
 data class GameMessage (
     val players:List<Player>? = null,
-    val yourId: PlayerId? = null,
+    val handshake: HandshakeFromServer? = null,
     val deathCircles:List<DeathCircle>? = null
 )
+
+@Serializable
+data class HandshakeFromServer(
+    val you:Player
+)
+
 
 @Serializable
 data class DeathCircle(
@@ -36,4 +42,10 @@ data class Player(
 data class PlayerMessage (
     val player: Player? = null,
     val clicked: Boolean? = null,
+    val handshake: HandshakeFromPlayer? = null,
+)
+
+@Serializable
+data class HandshakeFromPlayer(
+    val playerId: Short? = null,
 )
