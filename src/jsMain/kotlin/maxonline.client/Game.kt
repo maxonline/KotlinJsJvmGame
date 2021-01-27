@@ -5,28 +5,34 @@ import com.soywiz.klock.Frequency
 import com.soywiz.klock.milliseconds
 import com.soywiz.korge.input.onDown
 import com.soywiz.korge.tween.get
-import com.soywiz.korge.view.SolidRect
-import com.soywiz.korge.view.Stage
-import com.soywiz.korge.view.addFixedUpdater
-import com.soywiz.korge.view.xy
+import com.soywiz.korge.view.*
+import com.soywiz.korge.view.Circle
 import com.soywiz.korim.color.RGBA
 import kotlinx.browser.document
 import maxonline.korge.constantTween
-import maxonline.shared.GameMessage
-import maxonline.shared.Player
-import maxonline.shared.PlayerMessage
+import maxonline.shared.*
 import org.w3c.dom.HTMLCanvasElement
 
 class Game(
-    val gamePlayer: GamePlayer,
+    player: Player,
     val stage: Stage,
     val canvas: HTMLCanvasElement,
     val network: Network
 ) {
 
+    val gamePlayer: GamePlayer;
     var players: HashMap<PlayerId, GamePlayer> = HashMap()
+    var circles: HashMap<GameCircle, Circle> = HashMap()
 
     init {
+        gamePlayer = createPlayer(player)
+        stage.addChild(gamePlayer.view)
+
+        val view = Circle(
+            20.0,
+        ).xy(500, 500)
+        stage.addChild(view)
+
         stage.addFixedUpdater(timesPerSecond = Frequency(10.0), limitCallsPerFrame = 1) {
             sendStateToServer()
         }
@@ -51,65 +57,97 @@ class Game(
 
     fun onMessage(gameMessage: GameMessage) {
         if (gameMessage.players != null) {
-            val updatedMe = gameMessage.players.first { it.playerId == gamePlayer.playerId }
-
             val now = DateTime.now().unixMillisLong
             val timeToNextUpdate = (now - lastPlayersUpdate)
             lastPlayersUpdate = now
 
-            gameMessage.players.forEach {
-                //if (it != updatedMe) {
-                if (players.containsKey(it.playerId)) {
-                    val gamePlayer = players[it.playerId]!!
-                    val view = gamePlayer.view
-                    gamePlayer.updater?.newVariables(
-                        view::y[it.y.toDouble()],
-                        view::x[ it.x.toDouble()],
-                        time = timeToNextUpdate.milliseconds)
+            HandlePlayersUpdate(gameMessage.players.filterNot { it.playerId == gamePlayer.playerId  }, timeToNextUpdate)
+            handleCirclesUpdate(gameMessage.circles)
+        }
+    }
 
-
-                } else {
-                    val view = SolidRect(
-                        width = 20.0,
-                        height = 5.0,
-                        color = RGBA(it.red.toInt(), it.blue.toInt(), it.green.toInt())
+    private fun handleCirclesUpdate(circlesFromServer: List<GameCircle>?) {
+        circlesFromServer?.forEach { serverCircle ->
+            if (circles.contains(serverCircle)) {
+                circles[serverCircle]!!.radius = serverCircle.diameter / 2.0
+            } else {
+                val view = Circle(
+                    serverCircle.diameter / 2.0,
+                    RGBA(
+                        serverCircle.red.toInt(),
+                        serverCircle.blue.toInt(),
+                        serverCircle.green.toInt()
                     )
-                    stage.addChild(view)
-
-                    players[it.playerId] = GamePlayer(
-                        it.playerId,
-                        view.xy(it.x.toInt(), it.y.toInt()),
-                        stage.constantTween(
-                            view::y[it.y.toDouble()],
-                            view::x[it.x.toDouble()],
-                            time = timeToNextUpdate.milliseconds,
-                        )
-                    )
-                }
-
-                //}
-
-
+                ).xy(serverCircle.x.toInt(), serverCircle.y.toInt())
+                    .center()
+                circles[serverCircle] = view
+                stage.addChild(view)
             }
-            players.filter { localPlayer ->
-                gameMessage.players.find { playerFromServer -> playerFromServer.playerId == localPlayer.key } == null
-            }.run {
+        }
+        circles.filterKeys { !(circlesFromServer?.contains(it) ?: false) }
+    }
+
+    private fun HandlePlayersUpdate(
+        playersFromServer: List<Player>,
+        timeToNextUpdate: Long
+    ) {
+        playersFromServer.forEach {
+            val player = if (players.containsKey(it.playerId)) {
+                players[it.playerId]!!
+            } else {
+                val newPlayer = createPlayer(it)
+                stage.addChild(newPlayer.view)
+                players[it.playerId] = newPlayer
+                newPlayer
+            }
+
+            gamePlayer.updater.newVariables(
+                player.view::y[it.y.toDouble()],
+                player.view::x[it.x.toDouble()],
+                time = timeToNextUpdate.milliseconds
+            )
+        }
+
+        val playersMap = playersFromServer.associateBy { it.playerId }
+        players.filterKeys { !playersMap.containsKey(it) }
+            .run {
                 forEach {
                     stage.removeChild(it.value.view)
                     players.remove(it.key)
                 }
             }
-
-
-        }
-
-        if (gameMessage.deathCircles != null) {
-            //deathCircles = gameMessage.deathCircles
-        }
     }
 
     fun sendStateToServer() {
-        network.sendMessage(PlayerMessage(Player(gamePlayer.view.x.toShort(), gamePlayer.view.y.toShort(), 0, 0, 0, 0, gamePlayer.playerId)))
+        network.sendMessage(
+            PlayerMessage(
+                Player(
+                    gamePlayer.view.x.toShort(),
+                    gamePlayer.view.y.toShort(),
+                    0,
+                    0,
+                    0,
+                    0,
+                    gamePlayer.playerId
+                )
+            )
+        )
+    }
+
+    private fun createPlayer(player: Player): GamePlayer {
+        val view = SolidRect(
+            width = 20.0,
+            height = 5.0,
+            color = RGBA(player.red.toInt(), player.blue.toInt(), player.green.toInt())
+        )
+        return GamePlayer(
+            player.playerId, view,
+            stage.constantTween(
+                view::y[player.y.toDouble()],
+                view::x[player.x.toDouble()],
+                time = 50.milliseconds,
+            )
+        )
     }
 
 }

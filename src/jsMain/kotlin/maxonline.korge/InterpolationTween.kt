@@ -10,7 +10,7 @@ import com.soywiz.korge.component.attach
 import com.soywiz.korge.tween.V2
 import com.soywiz.korma.interpolation.Easing
 
-class ConstantTween(
+class InterpolationTween(
     override val view: BaseView,
     var variables: List<V2<*>>,
     time: TimeSpan,
@@ -74,7 +74,6 @@ fun BaseView.constantTween(
     vararg vs: V2<*>,
     time: TimeSpan = 1.seconds,
     easing: Easing = Easing.LINEAR,
-): ConstantTween {
-    val noCoroutineTweenComponent = ConstantTween(this, vs.toList(), time, easing).also { it.attach() }
-    return noCoroutineTweenComponent
+): InterpolationTween {
+    return InterpolationTween(this, vs.toList(), time, easing).also { it.attach() }
 }

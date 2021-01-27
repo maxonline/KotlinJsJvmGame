@@ -18,7 +18,7 @@ class GameServer {
     private val log: Logger = LoggerFactory.getLogger(this.javaClass.name)
 
     private val sessionToPlayers = HashMap<DefaultWebSocketServerSession, Player>()
-    private var deathCircles: List<DeathCircle> = ArrayList()
+    private var circles: List<GameCircle> = ArrayList()
 
     private var lastId: Short = 1
 
@@ -40,7 +40,7 @@ class GameServer {
     private fun update(deltatime: Long) {
         val players = ArrayList(sessionToPlayers.values)
 
-        deathCircles = deathCircles.mapNotNull {
+        circles = circles.mapNotNull {
             if (it.diameter < 1) {
                 null
             } else {
@@ -52,7 +52,7 @@ class GameServer {
             GlobalScope.launch(CoroutineName("update-state-to-all")) {
                 val frame = Frame.Binary(
                     true,
-                    format.encodeToByteArray(GameMessage(players = players, deathCircles = deathCircles))
+                    format.encodeToByteArray(GameMessage(players = players, circles = circles))
                 )
                 it.send(frame)
             }
@@ -88,8 +88,8 @@ class GameServer {
 
         if (playerMessage.clicked == true) {
             val player = sessionToPlayers[session]!!
-            deathCircles = deathCircles +
-                    DeathCircle(
+            circles = circles +
+                    GameCircle(
                         30,
                         player.x,
                         player.y,
