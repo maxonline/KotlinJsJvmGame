@@ -27,7 +27,7 @@ class InterpolationTween(
         update(0.0.milliseconds)
     }
 
-    fun newVariables(vararg variables: V2<*>, time: TimeSpan){
+    fun interpolate(vararg variables: V2<*>, time: TimeSpan){
         update(maxTime)
         this.variables = variables.toList()
         variables.fastForEach { v ->
@@ -70,7 +70,7 @@ class InterpolationTween(
 }
 
 
-fun BaseView.constantTween(
+fun BaseView.interpolationTween(
     vararg vs: V2<*>,
     time: TimeSpan = 1.seconds,
     easing: Easing = Easing.LINEAR,

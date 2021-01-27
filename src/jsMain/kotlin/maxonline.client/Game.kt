@@ -9,7 +9,7 @@ import com.soywiz.korge.view.*
 import com.soywiz.korge.view.Circle
 import com.soywiz.korim.color.RGBA
 import kotlinx.browser.document
-import maxonline.korge.constantTween
+import maxonline.korge.interpolationTween
 import maxonline.shared.*
 import org.w3c.dom.HTMLCanvasElement
 
@@ -27,11 +27,6 @@ class Game(
     init {
         gamePlayer = createPlayer(player)
         stage.addChild(gamePlayer.view)
-
-        val view = Circle(
-            20.0,
-        ).xy(500, 500)
-        stage.addChild(view)
 
         stage.addFixedUpdater(timesPerSecond = Frequency(10.0), limitCallsPerFrame = 1) {
             sendStateToServer()
@@ -101,7 +96,7 @@ class Game(
                 newPlayer
             }
 
-            gamePlayer.updater.newVariables(
+            gamePlayer.updater.interpolate(
                 player.view::y[it.y.toDouble()],
                 player.view::x[it.x.toDouble()],
                 time = timeToNextUpdate.milliseconds
@@ -142,7 +137,7 @@ class Game(
         )
         return GamePlayer(
             player.playerId, view,
-            stage.constantTween(
+            stage.interpolationTween(
                 view::y[player.y.toDouble()],
                 view::x[player.x.toDouble()],
                 time = 50.milliseconds,
