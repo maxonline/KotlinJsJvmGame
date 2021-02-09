@@ -56,7 +56,8 @@ class Game(
             val timeToNextUpdate = (now - lastPlayersUpdate)
             lastPlayersUpdate = now
 
-            HandlePlayersUpdate(gameMessage.players.filterNot { it.playerId == gamePlayer.playerId  }, timeToNextUpdate)
+            val playersFromServer = gameMessage.players//.filterNot { it.playerId == gamePlayer.playerId }
+            HandlePlayersUpdate(playersFromServer, timeToNextUpdate)
             handleCirclesUpdate(gameMessage.circles)
         }
     }

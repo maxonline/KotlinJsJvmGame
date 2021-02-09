@@ -1,16 +1,16 @@
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 plugins {
-    kotlin("multiplatform") version "1.4.0"
-    kotlin("plugin.serialization") version "1.4.0"
+    kotlin("multiplatform") version "1.4.30"
+    kotlin("plugin.serialization") version "1.4.30"
     application
 }
 group = "maxonline"
 
-val ktor_version = "1.4.1"
+val ktor_version = "1.5.1"
 val kotlinx_version = "0.7.2"
 val logback_version = "1.2.3"
-val serialization_version = "1.0.0-RC"
+val serialization_version = "1.0.1"
 
 repositories {
     mavenCentral()
@@ -91,7 +91,7 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-core-js:$serialization_version")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf-js:$serialization_version")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor-js:$serialization_version")
-                implementation("com.soywiz.korlibs.korge:korge-js:2.0.0-rc3")
+                implementation("com.soywiz.korlibs.korge2:korge-js:2.0.6")
             }
         }
         val jsTest by getting {
