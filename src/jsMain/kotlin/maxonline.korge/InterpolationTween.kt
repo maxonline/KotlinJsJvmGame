@@ -17,7 +17,7 @@ class InterpolationTween(
     val easing: Easing,
 ) : UpdateComponent {
     var elapsed = 0.0.milliseconds
-    var maxTime = if (time != TimeSpan.NIL) time else (variables.map { it.endTime.nanoseconds }.max() ?: 0.0).nanoseconds
+    var maxTime = if (time != TimeSpan.NIL) time else (variables.map { it.endTime.nanoseconds }.maxOrNull() ?: 0.0).nanoseconds
     var done = false
 
     init {
@@ -33,7 +33,7 @@ class InterpolationTween(
         variables.fastForEach { v ->
             v.init()
         }
-        maxTime = if (time != TimeSpan.NIL) time else (variables.map { it.endTime.nanoseconds }.max() ?: 0.0).nanoseconds
+        maxTime = if (time != TimeSpan.NIL) time else (variables.map { it.endTime.nanoseconds }.maxOrNull() ?: 0.0).nanoseconds
         done = false
         elapsed =  0.0.milliseconds
     }

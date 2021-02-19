@@ -6,16 +6,19 @@ import com.soywiz.klock.milliseconds
 import com.soywiz.korge.input.onDown
 import com.soywiz.korge.tween.get
 import com.soywiz.korge.view.*
-import com.soywiz.korge.view.Circle
+import com.soywiz.korge.view.Camera
 import com.soywiz.korim.color.RGBA
 import kotlinx.browser.document
 import maxonline.korge.interpolationTween
-import maxonline.shared.*
+import maxonline.shared.GameCircle
+import maxonline.shared.GameMessage
+import maxonline.shared.Player
+import maxonline.shared.PlayerMessage
 import org.w3c.dom.HTMLCanvasElement
 
 class Game(
     player: Player,
-    val stage: Stage,
+    stage: Stage,
     val canvas: HTMLCanvasElement,
     val network: Network
 ) {
@@ -24,11 +27,17 @@ class Game(
     var players: HashMap<PlayerId, GamePlayer> = HashMap()
     var circles: HashMap<GameCircle, Circle> = HashMap()
 
+    private val gameContainer = Container()
+
     init {
         gamePlayer = createPlayer(player)
-        stage.addChild(gamePlayer.view)
+        gameContainer.addChild(gamePlayer.view)
+        gameContainer.addChild(Circle(3.0).xy(100, 100))
+        gameContainer.addChild(Circle(4.0).xy(200, 200))
+        gameContainer.addChild(Circle(5.0).xy(400, 200))
+        gameContainer.addChild(Circle(6.0).xy(100, 400))
 
-        stage.addFixedUpdater(timesPerSecond = Frequency(10.0), limitCallsPerFrame = 1) {
+        gameContainer.addFixedUpdater(timesPerSecond = Frequency(10.0), limitCallsPerFrame = 1) {
             sendStateToServer()
         }
 
@@ -39,13 +48,21 @@ class Game(
                 network.sendMessage(PlayerMessage(clicked = true))
             }
         }
+        val cameraBounds = ClipContainer(1000.0, 1000.0)
 
         canvas.onmousemove = {
             if (document.hasPointerLock()) {
-                gamePlayer.view.x += it.movementX()
-                gamePlayer.view.y += it.movementY()
+                //gamePlayer.view.x += it.movementX()
+                //gamePlayer.view.y += it.movementY()
+                cameraBounds.x -= it.movementX()
+                cameraBounds.y -= it.movementY()
             }
         }
+
+        val camera = Camera()
+        cameraBounds.addChild(camera)
+        camera.addChild(gameContainer)
+        stage.addChild(cameraBounds)
     }
 
     private var lastPlayersUpdate = DateTime.now().unixMillisLong
@@ -77,7 +94,7 @@ class Game(
                 ).xy(serverCircle.x.toInt(), serverCircle.y.toInt())
                     .center()
                 circles[serverCircle] = view
-                stage.addChild(view)
+                gameContainer.addChild(view)
             }
         }
         circles.filterKeys { !(circlesFromServer?.contains(it) ?: false) }
@@ -92,7 +109,7 @@ class Game(
                 players[it.playerId]!!
             } else {
                 val newPlayer = createPlayer(it)
-                stage.addChild(newPlayer.view)
+                gameContainer.addChild(newPlayer.view)
                 players[it.playerId] = newPlayer
                 newPlayer
             }
@@ -108,7 +125,7 @@ class Game(
         players.filterKeys { !playersMap.containsKey(it) }
             .run {
                 forEach {
-                    stage.removeChild(it.value.view)
+                    gameContainer.removeChild(it.value.view)
                     players.remove(it.key)
                 }
             }
@@ -138,7 +155,7 @@ class Game(
         )
         return GamePlayer(
             player.playerId, view,
-            stage.interpolationTween(
+            gameContainer.interpolationTween(
                 view::y[player.y.toDouble()],
                 view::x[player.x.toDouble()],
                 time = 50.milliseconds,
