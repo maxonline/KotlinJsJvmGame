@@ -4,10 +4,11 @@ import com.soywiz.klock.DateTime
 import com.soywiz.klock.Frequency
 import com.soywiz.klock.milliseconds
 import com.soywiz.korge.input.onDown
+import com.soywiz.korge.input.onScroll
 import com.soywiz.korge.tween.get
 import com.soywiz.korge.view.*
-import com.soywiz.korge.view.Camera
 import com.soywiz.korim.color.RGBA
+import com.soywiz.korma.geom.Rectangle
 import kotlinx.browser.document
 import maxonline.korge.interpolationTween
 import maxonline.shared.GameCircle
@@ -35,11 +36,19 @@ class Game(
         gameContainer.addChild(Circle(3.0).xy(100, 100))
         gameContainer.addChild(Circle(4.0).xy(200, 200))
         gameContainer.addChild(Circle(5.0).xy(400, 200))
-        gameContainer.addChild(Circle(6.0).xy(100, 400))
+        val circle = Circle(50.0).xy(100, 400)
+        gameContainer.addChild(circle)
 
         gameContainer.addFixedUpdater(timesPerSecond = Frequency(10.0), limitCallsPerFrame = 1) {
             sendStateToServer()
         }
+
+        val cameraBounds = ClipContainer(1000.0, 1000.0)
+        val camera = Camera()
+        cameraBounds.addChild(camera)
+        camera.addChild(gameContainer)
+        stage.addChild(cameraBounds)
+        //camera.setTo(circle)
 
         stage.onDown {
             if (document.hasPointerLock().not()) {
@@ -47,22 +56,36 @@ class Game(
             } else {
                 network.sendMessage(PlayerMessage(clicked = true))
             }
+
+            println("canvas width:    ${canvas.width}   stage width:  ${stage.width}  stage.scaledwidth/2:    ${stage.scaledWidth /2 } stage.scaledHeight/2:    ${stage.scaledHeight /2 }gameWindow width:  ${stage.gameWindow.width} stage.x:  ${stage.x}")
+            println("stage.x${stage.x} + gamePlayer.view.x${gamePlayer.view.x} * stage.scaleX${stage.scaleX} - stage.scaledWidth/2${stage.scaledWidth /2 } = ${stage.x + gamePlayer.view.x * stage.scaleX - stage.scaledWidth / 4}")
         }
-        val cameraBounds = ClipContainer(1000.0, 1000.0)
+
+        var zoom = 1.0
 
         canvas.onmousemove = {
             if (document.hasPointerLock()) {
-                //gamePlayer.view.x += it.movementX()
-                //gamePlayer.view.y += it.movementY()
-                cameraBounds.x -= it.movementX()
-                cameraBounds.y -= it.movementY()
+                gamePlayer.view.x += it.movementX()
+                gamePlayer.view.y += it.movementY()
+
             }
         }
+        stage.addUpdater {
+            camera.setTo(
+                Rectangle(
+                    stage.x + gamePlayer.view.x * stage.scaleX - stage.scaledWidth / 2*zoom,
+                    stage.y + gamePlayer.view.y * stage.scaleY - stage.scaledHeight / 2*zoom,
+                    stage.scaledWidth*zoom,
+                    stage.scaledWidth*zoom,
+                )
+            )
+        }
+        stage.onScroll {
+            println("scroll! " + it.scrollDeltaY + " " + it.scrollDeltaX + " " + it.scrollDeltaZ + " " )
+            zoom += it.scrollDeltaX *0.1
+        }
 
-        val camera = Camera()
-        cameraBounds.addChild(camera)
-        camera.addChild(gameContainer)
-        stage.addChild(cameraBounds)
+
     }
 
     private var lastPlayersUpdate = DateTime.now().unixMillisLong
@@ -98,6 +121,7 @@ class Game(
             }
         }
         circles.filterKeys { !(circlesFromServer?.contains(it) ?: false) }
+
     }
 
     private fun HandlePlayersUpdate(
@@ -135,8 +159,8 @@ class Game(
         network.sendMessage(
             PlayerMessage(
                 Player(
-                    gamePlayer.view.x.toShort(),
-                    gamePlayer.view.y.toShort(),
+                    gamePlayer.view.x.toInt().toShort(),
+                    gamePlayer.view.y.toInt().toShort(),
                     0,
                     0,
                     0,

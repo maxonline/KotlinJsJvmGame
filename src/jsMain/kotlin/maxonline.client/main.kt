@@ -24,7 +24,7 @@ suspend fun main() {
         bgcolor = Colors.BURLYWOOD,
         targetFps = 120.0,
         quality = GameWindow.Quality.PERFORMANCE,
-        debug = false
+        debug = true
     ) {
         korgeStage = this
     }
