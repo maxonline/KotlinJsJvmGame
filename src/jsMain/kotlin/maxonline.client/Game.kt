@@ -4,7 +4,6 @@ import com.soywiz.klock.DateTime
 import com.soywiz.klock.Frequency
 import com.soywiz.klock.milliseconds
 import com.soywiz.korge.input.onDown
-import com.soywiz.korge.input.onScroll
 import com.soywiz.korge.tween.get
 import com.soywiz.korge.view.*
 import com.soywiz.korim.color.RGBA
@@ -67,7 +66,6 @@ class Game(
             if (document.hasPointerLock()) {
                 gamePlayer.view.x += it.movementX()
                 gamePlayer.view.y += it.movementY()
-
             }
         }
         stage.addUpdater {
@@ -80,9 +78,10 @@ class Game(
                 )
             )
         }
-        stage.onScroll {
-            println("scroll! " + it.scrollDeltaY + " " + it.scrollDeltaX + " " + it.scrollDeltaZ + " " )
-            zoom += it.scrollDeltaX *0.1
+        canvas.onwheel = {
+            zoom +=  it.deltaY * 0.05
+            zoom = minOf( maxOf(zoom, 0.3) , 3.0)
+            ""
         }
 
 
