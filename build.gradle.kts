@@ -1,16 +1,15 @@
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 plugins {
-    kotlin("multiplatform") version "1.4.30"
-    kotlin("plugin.serialization") version "1.4.30"
+    kotlin("multiplatform") version "1.5.31"
+    kotlin("plugin.serialization") version "1.5.31"
     application
 }
 group = "maxonline"
 
-val ktor_version = "1.5.1"
-val kotlinx_version = "0.7.2"
+val ktor_version = "2.0.0-eap-132"
 val logback_version = "1.2.3"
-val serialization_version = "1.0.1"
+val serialization_version = "1.3.0"
 
 repositories {
     mavenCentral()
@@ -19,6 +18,7 @@ repositories {
     maven { url = uri("https://dl.bintray.com/kotlin/kotlinx") }
     maven { url = uri("https://dl.bintray.com/kotlin/kotlin-js-wrappers") }
     maven { url = uri("https://dl.bintray.com/korlibs/korlibs/") }
+    maven { url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap") }
 }
 kotlin {
     jvm {
@@ -86,12 +86,12 @@ kotlin {
         val jsMain by getting {
             dependencies {
                 implementation("io.ktor:ktor-utils-js:$ktor_version")
-                implementation("org.jetbrains.kotlinx:kotlinx-html-js:$kotlinx_version")
+                implementation("org.jetbrains.kotlinx:kotlinx-html-js:0.7.2")
 
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-core-js:$serialization_version")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf-js:$serialization_version")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor-js:$serialization_version")
-                implementation("com.soywiz.korlibs.korge2:korge-js:2.0.6")
+                implementation("com.soywiz.korlibs.korge2:korge-js:2.4.1")
             }
         }
         val jsTest by getting {
