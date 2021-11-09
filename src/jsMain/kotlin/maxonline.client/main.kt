@@ -18,6 +18,8 @@ private var korgeStage: Stage? = null
 private var game: Game? = null
 
 suspend fun main() {
+    sayHiFromJs()
+
     Korge(
         width = 1000,
         height = 600,
@@ -31,6 +33,7 @@ suspend fun main() {
 }
 
 private fun onMessage(gameMessage: GameMessage) {
+    return
     if (game != null) {
         game!!.onMessage(gameMessage)
     } else {
@@ -47,4 +50,6 @@ private fun onMessage(gameMessage: GameMessage) {
 
 data class GamePlayer(val playerId: PlayerId, val view: View, val updater: InterpolationTween)
 
+external fun sayHiFromJs()
 
+fun sayHiFromKotlin() = "Hello from kotlin"

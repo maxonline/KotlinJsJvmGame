@@ -29,25 +29,9 @@ kotlin {
     }
     js(IR) {
         browser {
-            binaries.executable()
-            webpackTask {
-                cssSupport.enabled = true
-                mode = org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig.Mode.DEVELOPMENT
-            }
-            runTask {
-                cssSupport.enabled = true
-            }
-            testTask {
-                useKarma {
-                    useChromeHeadless()
-                    webpackConfig.cssSupport.enabled = true
-                }
-            }
-            dceTask {
-                dceOptions.devMode = true
-            }
+
         }
-        binaries.executable()
+        binaries.library()
     }
     sourceSets {
         val commonMain by getting {
@@ -67,6 +51,7 @@ kotlin {
         }
         val jvmMain by getting {
             dependencies {
+                implementation(files("$rootDir/src/jsMain/js/"))
                 implementation("io.ktor:ktor-server-netty:$ktor_version")
                 implementation("io.ktor:ktor-html-builder:$ktor_version")
                 implementation("io.ktor:ktor-websockets:$ktor_version")
@@ -104,13 +89,19 @@ kotlin {
 application {
     mainClassName = "maxonline.server.MainKt"
 }
-tasks.getByName<KotlinWebpack>("jsBrowserProductionWebpack") {
-    outputFileName = "KotlinJsJvmGame.js"
+
+tasks.getByName<org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile>("compileKotlinJs") {
+    kotlinOptions.moduleKind = "plain"
 }
+
+tasks.register<Copy>("copyStaticJsFiles") {
+    from("$rootDir/src/jsMain/js/")
+    into("$buildDir/processedResources/jvm/main/web")
+}
+
+
 tasks.getByName<Jar>("jvmJar") {
-    dependsOn(tasks.getByName("jsBrowserProductionWebpack"))
-    val jsBrowserProductionWebpack = tasks.getByName<KotlinWebpack>("jsBrowserProductionWebpack")
-    from(File(jsBrowserProductionWebpack.destinationDirectory, jsBrowserProductionWebpack.outputFileName))
+    dependsOn(tasks.getByName("copyStaticJsFiles"))
 }
 tasks.getByName<JavaExec>("run") {
     dependsOn(tasks.getByName<Jar>("jvmJar"))

@@ -26,12 +26,15 @@ fun main() {
                         title("KotlinJsJvmGame")
                     }
                     body {
+                        script(src = "/static/libs/require.js") {}
+                        script(src = "/static/start.js") {}
                         script(src = "/static/KotlinJsJvmGame.js") {}
                     }
                 }
             }
             static("/static") {
                 resource("KotlinJsJvmGame.js")
+                resources("web")
             }
             webSocket("/") {
                 log.info("New player connected: ${call.request.origin.host}")
