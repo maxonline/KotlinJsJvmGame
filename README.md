@@ -1,6 +1,6 @@
 # Kotlin JS JVM Game Template
 
-Starter Project for creating Kotlin JS web multiplayer games with a JVM Websocket server and shared code. 
+Template project for creating a fullstack Kotlin JS JVM multiplayer web game with a JVM Websocket server and shared code. 
 
 Frameworks:
 * [Ktor](https://github.com/ktorio/ktor)
