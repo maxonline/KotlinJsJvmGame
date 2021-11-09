@@ -30,22 +30,10 @@ kotlin {
     js(IR) {
         useCommonJs()
         browser {
-            binaries.executable()
-            webpackTask {
+            commonWebpackConfig {
                 cssSupport.enabled = true
-                mode = org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig.Mode.DEVELOPMENT
-            }
-            runTask {
-                cssSupport.enabled = true
-            }
-            testTask {
-                useKarma {
-                    useChromeHeadless()
-                    webpackConfig.cssSupport.enabled = true
-                }
-            }
-            dceTask {
-                dceOptions.devMode = true
+                outputFileName = "KotlinJsJvmGame.js"
+                println("webpack outputpath:" + this.outputPath?.canonicalPath)
             }
         }
         binaries.executable()
@@ -108,20 +96,10 @@ kotlin {
 application {
     mainClassName = "maxonline.server.MainKt"
 }
-tasks.getByName<KotlinWebpack>("jsBrowserProductionWebpack") {
-    outputFileName = "KotlinJsJvmGame.js"
-}
 
-tasks.register<Copy>("copyJsResources") {
-    from("$rootDir/src/jsMain/resources/")
-    into("$buildDir/processedResources/jvm/main/web")
-}
-
-tasks.getByName<Jar>("jvmJar") {
-    dependsOn(tasks.getByName("jsBrowserProductionWebpack"))
-    dependsOn(tasks.getByName("copyJsResources"))
-    val jsBrowserProductionWebpack = tasks.getByName<KotlinWebpack>("jsBrowserProductionWebpack")
-    from(File(jsBrowserProductionWebpack.destinationDirectory, jsBrowserProductionWebpack.outputFileName))
+tasks.named<Copy>("jvmProcessResources") {
+    val jsBrowserDistribution = tasks.named("jsBrowserDistribution")
+    from(jsBrowserDistribution)
 }
 tasks.getByName<JavaExec>("run") {
     dependsOn(tasks.getByName<Jar>("jvmJar"))

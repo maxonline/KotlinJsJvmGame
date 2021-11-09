@@ -24,16 +24,16 @@ fun main() {
                 call.respondHtml {
                     head {
                         title("KotlinJsJvmGame")
+                        styleLink("static/index.css")
                     }
                     body {
-                        script(src = "/static/KotlinJsJvmGame.js") {}
                         div { id = "root" }
+                        script(src = "/static/KotlinJsJvmGame.js") {}
                     }
                 }
             }
             static("/static") {
-                resource("KotlinJsJvmGame.js")
-                resources("web")
+                resources()
             }
             webSocket("/") {
                 log.info("New player connected: ${call.request.origin.host}")
