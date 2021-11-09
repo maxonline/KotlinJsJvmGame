@@ -4,7 +4,7 @@ Starter Project for creating Kotlin JS web multiplayer games with a JVM Websocke
 
 Frameworks:
 * [Ktor](https://github.com/ktorio/ktor)
-* [Korge](https://github.com/korlibs/korge)
+* [PIXI.js](https://github.com/pixijs/pixijs) using [typings](https://github.com/Ayfri/PIXI-Kotlin) from [Ayfri](https://github.com/Ayfri)
 
 ## Build
 You can build and run the application from the root directory:
