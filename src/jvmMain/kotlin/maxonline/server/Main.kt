@@ -27,11 +27,13 @@ fun main() {
                     }
                     body {
                         script(src = "/static/KotlinJsJvmGame.js") {}
+                        div { id = "root" }
                     }
                 }
             }
             static("/static") {
                 resource("KotlinJsJvmGame.js")
+                resources("web")
             }
             webSocket("/") {
                 log.info("New player connected: ${call.request.origin.host}")

@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 plugins {
     kotlin("multiplatform") version "1.5.31"
     kotlin("plugin.serialization") version "1.5.31"
+    //id("com.github.turansky.seskar") version "0.1.0" // for union types in js
     application
 }
 group = "maxonline"
@@ -17,7 +18,6 @@ repositories {
     maven { url = uri("https://dl.bintray.com/kotlin/ktor") }
     maven { url = uri("https://dl.bintray.com/kotlin/kotlinx") }
     maven { url = uri("https://dl.bintray.com/kotlin/kotlin-js-wrappers") }
-    maven { url = uri("https://dl.bintray.com/korlibs/korlibs/") }
     maven { url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap") }
 }
 kotlin {
@@ -28,6 +28,7 @@ kotlin {
         withJava()
     }
     js(IR) {
+        useCommonJs()
         browser {
             binaries.executable()
             webpackTask {
@@ -91,7 +92,10 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-core-js:$serialization_version")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf-js:$serialization_version")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor-js:$serialization_version")
-                implementation("com.soywiz.korlibs.korge2:korge-js:2.4.1")
+
+                implementation("com.github.turansky.seskar:seskar-core:0.1.0")
+                implementation("org.jetbrains.kotlin-wrappers:kotlin-extensions:1.0.1-pre.263-kotlin-1.5.31")
+                implementation(npm("pixi.js", "6.2.0"))
             }
         }
         val jsTest by getting {
@@ -107,8 +111,15 @@ application {
 tasks.getByName<KotlinWebpack>("jsBrowserProductionWebpack") {
     outputFileName = "KotlinJsJvmGame.js"
 }
+
+tasks.register<Copy>("copyJsResources") {
+    from("$rootDir/src/jsMain/resources/")
+    into("$buildDir/processedResources/jvm/main/web")
+}
+
 tasks.getByName<Jar>("jvmJar") {
     dependsOn(tasks.getByName("jsBrowserProductionWebpack"))
+    dependsOn(tasks.getByName("copyJsResources"))
     val jsBrowserProductionWebpack = tasks.getByName<KotlinWebpack>("jsBrowserProductionWebpack")
     from(File(jsBrowserProductionWebpack.destinationDirectory, jsBrowserProductionWebpack.outputFileName))
 }
@@ -122,3 +133,4 @@ tasks.withType<org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile> {
         sourceMap = true
     }
 }
+
