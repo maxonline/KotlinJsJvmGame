@@ -15,24 +15,20 @@ import kotlin.random.Random
 
 typealias PlayerId = Short
 
-private var network: Network? = Network("ws://" + document.location?.host) { onMessage(it) }
-//private var game: Game? = null
+lateinit var network: Network
+private var game: Game? = null
 
 lateinit var app: Application
 
 fun main() {
     println("js executing")
     pixi.typings.require("pixi.js")
-    println("creatjng app")
     app = Application.create { backgroundColor = 08080808f }
     app.resizeTo = window
 
     val rootDiv = document.getElementById("root")
-    println("root div: $rootDiv")
     rootDiv!!.appendChild(app.view)
     Loader.shared.add("test", "static/test.png").load(::start)
-    println("main done")
-
 }
 
 fun start() {
@@ -53,25 +49,26 @@ fun start() {
     })
 
     app.stage.addChild(sprite)
+
+    network = Network("ws://" + document.location?.host) { onMessage(it) }
     println("start done")
 
 }
 
 private fun onMessage(gameMessage: GameMessage) {
-//    if (game != null) {
-//        game!!.onMessage(gameMessage)
-//    } else {
-//        val canvas = document.getElementsByTagName("body").item(0)?.getElementsByTagName("canvas")
-//            ?.item(0) as HTMLCanvasElement
-//
-//        if (gameMessage.handshake != null) {
-//           // game = Game(gameMessage.handshake.you, korgeStage!!, canvas, network!!)
-//        } else {
-//            println("recieved no handshake :(")
-//        }
-//    }
+    if (game != null) {
+        game!!.onMessage(gameMessage)
+    } else {
+        val canvas = document.getElementsByTagName("body").item(0)?.getElementsByTagName("canvas")
+            ?.item(0) as HTMLCanvasElement
+
+        if (gameMessage.handshake != null) {
+            game = Game(gameMessage.handshake.you, app, canvas, network)
+        } else {
+            println("recieved no handshake :(")
+        }
+    }
 }
 
-//data class GamePlayer(val playerId: PlayerId, val view: View, val updater: InterpolationTween)
 
 
