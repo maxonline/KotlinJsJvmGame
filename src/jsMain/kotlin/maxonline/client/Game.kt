@@ -31,8 +31,8 @@ class Game(
     init {
 
         val gr = Graphics()
-        gr.beginFill(0xffffff);
-        gr.drawCircle(30, 30, 30);
+        gr.beginFill(0.0);
+        gr.drawCircle(30.0, 30.0, 30.0);
         gr.endFill();
         pixiApp.stage.addChild(gr)
 
@@ -40,7 +40,7 @@ class Game(
         pixiApp.stage.addChild(gamePlayer.view)
 
         val sendToServerTicker = Ticker()
-        sendToServerTicker.maxFPS = 10
+        sendToServerTicker.maxFPS = 10.0
         sendToServerTicker.add<Any>({ _, _ ->
             sendStateToServer()
 
@@ -112,9 +112,9 @@ class Game(
             } else {
 
                 val gr = Graphics()
-                val hexColor = rgb2hex(arrayOf(serverCircle.red.toInt(), serverCircle.green.toInt(), serverCircle.blue.toInt()))
+                val hexColor = rgb2hex(arrayOf(serverCircle.red.toDouble(), serverCircle.green.toDouble(), serverCircle.blue.toDouble()))
                 gr.beginFill(hexColor);
-                gr.drawCircle(serverCircle.x, serverCircle.y, serverCircle.diameter / 2.0);
+                gr.drawCircle(serverCircle.x.toDouble(), serverCircle.y.toDouble(), serverCircle.diameter / 2.0);
                 gr.endFill();
                 circles[serverCircle] = gr
                 pixiApp.stage.addChild(gr)
@@ -141,8 +141,8 @@ class Game(
            //TODO interpolation
 
             gamePlayer.view.apply {
-                x = it.x
-                y = it.y
+                x = it.x.toDouble()
+                y = it.y.toDouble()
             }
         }
 
@@ -174,14 +174,14 @@ class Game(
 
     private fun createPlayer(player: Player): GamePlayer {
         val gr = Graphics()
-        rgb2hex(arrayOf(player.red.toInt(), player.green.toInt(), player.blue.toInt()))
-        val hexColor = rgb2hex(arrayOf(player.red.toInt(), player.green.toInt(), player.blue.toInt()))
+        rgb2hex(arrayOf(player.red.toDouble(), player.green.toDouble(), player.blue.toDouble()))
+        val hexColor = rgb2hex(arrayOf(player.red.toDouble(), player.green.toDouble(), player.blue.toDouble()))
         gr.beginFill(hexColor)
         gr.drawRect(
             width = 20.0,
             height = 5.0,
-            x = 0,
-            y = 0
+            x = 0.0,
+            y = 0.0
         )
         gr.endFill()
 

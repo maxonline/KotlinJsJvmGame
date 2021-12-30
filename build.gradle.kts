@@ -1,9 +1,6 @@
-import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
-
 plugins {
-    kotlin("multiplatform") version "1.5.31"
-    kotlin("plugin.serialization") version "1.5.31"
-    //id("com.github.turansky.seskar") version "0.1.0" // for union types in js
+    kotlin("multiplatform") version "1.6.0"
+    kotlin("plugin.serialization") version "1.6.0"
     application
 }
 group = "maxonline"
@@ -15,10 +12,10 @@ val serialization_version = "1.3.0"
 repositories {
     mavenCentral()
     jcenter()
-    maven { url = uri("https://dl.bintray.com/kotlin/ktor") }
-    maven { url = uri("https://dl.bintray.com/kotlin/kotlinx") }
-    maven { url = uri("https://dl.bintray.com/kotlin/kotlin-js-wrappers") }
     maven { url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap") }
+    maven { url = uri("https://maven.pkg.jetbrains.space/public/p/kotlinx") }
+    maven { url = uri("https://maven.pkg.jetbrains.space/public/p/kotlin-js-wrappers") }
+    mavenLocal()
 }
 kotlin {
     jvm {
@@ -83,7 +80,8 @@ kotlin {
 
                 implementation("com.github.turansky.seskar:seskar-core:0.1.0")
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-extensions:1.0.1-pre.263-kotlin-1.5.31")
-                implementation(npm("pixi.js", "6.2.0"))
+                //implementation(npm("pixi.js", "6.2.0"))
+                implementation("io.github.ayfri:PIXI-Kotlin:0.1.0")
             }
         }
         val jsTest by getting {

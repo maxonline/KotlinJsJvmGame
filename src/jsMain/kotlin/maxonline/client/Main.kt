@@ -10,7 +10,7 @@ import pixi.typings.app.resizeTo
 import pixi.typings.loaders.Loader
 import pixi.typings.sprite.Sprite
 import pixi.typings.ticker.Ticker
-import pixi.utils.create
+import pixi.utils.Application
 import kotlin.random.Random
 
 typealias PlayerId = Short
@@ -23,8 +23,10 @@ lateinit var app: Application
 fun main() {
     println("js executing")
     pixi.typings.require("pixi.js")
-    app = Application.create { backgroundColor = 08080808f }
-    app.resizeTo = window
+    app = Application {
+        backgroundColor = (08080808f).toDouble()
+        resizeTo = window
+    }
 
     val rootDiv = document.getElementById("root")
     rootDiv!!.appendChild(app.view)
@@ -34,16 +36,16 @@ fun main() {
 fun start() {
     println("start")
     val sprite = Sprite.from("static/test.png").apply {
-        width = 100
-        height = 100
-        x = window.innerWidth / 2
-        y = window.innerHeight / 2
+        width = 100.0
+        height = 100.0
+        x = window.innerWidth / 2.0
+        y = window.innerHeight / 2.0
     }
 
     Ticker.shared.add<Any>({ _, _ ->
         sprite.apply {
-            x = Random.nextFloat() * window.innerWidth
-            y = Random.nextFloat() * window.innerHeight
+            x = Random.nextDouble() * window.innerWidth
+            y = Random.nextDouble() * window.innerHeight
         }
         println("tick")
     })
