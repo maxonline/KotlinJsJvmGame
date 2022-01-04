@@ -24,7 +24,7 @@ class Game(
     val network: Network
 ) {
 
-    val gamePlayer: GamePlayer;
+    val localPlayer: GamePlayer;
     var players: HashMap<PlayerId, GamePlayer> = HashMap()
     var circles: HashMap<GameCircle, DisplayObject> = HashMap()
 
@@ -36,15 +36,15 @@ class Game(
         gr.endFill();
         pixiApp.stage.addChild(gr)
 
-        gamePlayer = createPlayer(player)
-        pixiApp.stage.addChild(gamePlayer.view)
+        localPlayer = createPlayer(player)
+        pixiApp.stage.addChild(localPlayer.view)
 
         val sendToServerTicker = Ticker()
         sendToServerTicker.maxFPS = 10.0
         sendToServerTicker.add<Any>({ _, _ ->
             sendStateToServer()
-
         })
+        sendToServerTicker.start()
 
 
 //        val cameraBounds = ClipContainer(1000.0, 1000.0)
@@ -55,7 +55,7 @@ class Game(
 //        //camera.setTo(circle)
 
         canvas.onmousedown = {
-            if (document.hasPointerLock().not().not()) {
+            if (document.hasPointerLock().not()) {
                 canvas.requestPointerLock()
             } else {
                 network.sendMessage(PlayerMessage(clicked = true))
@@ -65,12 +65,13 @@ class Game(
         var zoom = 1.0
 
         canvas.onmousemove = {
-            //if (document.hasPointerLock()) {
-                gamePlayer.view.apply {
-                    x = gamePlayer.view.x.toDouble() + it.movementX()
-                    y = gamePlayer.view.y.toDouble() + it.movementY()
+            if (document.hasPointerLock()) {
+                localPlayer.view.apply {
+                    x = localPlayer.view.x.toDouble() + it.movementX()
+                    y = localPlayer.view.y.toDouble() + it.movementY()
                 }
-            //}
+                println("new player location: ${localPlayer.view.x}:${localPlayer.view.y}")
+            }
         }
 //        stage.addUpdater {
 //            camera.setTo(
@@ -112,7 +113,13 @@ class Game(
             } else {
 
                 val gr = Graphics()
-                val hexColor = rgb2hex(arrayOf(serverCircle.red.toDouble(), serverCircle.green.toDouble(), serverCircle.blue.toDouble()))
+                val hexColor = rgb2hex(
+                    arrayOf(
+                        serverCircle.red.toDouble(),
+                        serverCircle.green.toDouble(),
+                        serverCircle.blue.toDouble()
+                    )
+                )
                 gr.beginFill(hexColor);
                 gr.drawCircle(serverCircle.x.toDouble(), serverCircle.y.toDouble(), serverCircle.diameter / 2.0);
                 gr.endFill();
@@ -128,7 +135,7 @@ class Game(
         playersFromServer: List<Player>,
         timeToNextUpdate: Long
     ) {
-        playersFromServer.forEach {
+        playersFromServer.filter { it.playerId != localPlayer.playerId }.forEach {
             val player = if (players.containsKey(it.playerId)) {
                 players[it.playerId]!!
             } else {
@@ -138,9 +145,7 @@ class Game(
                 newPlayer
             }
 
-           //TODO interpolation
-
-            gamePlayer.view.apply {
+            player.view.apply {
                 x = it.x.toDouble()
                 y = it.y.toDouble()
             }
@@ -157,19 +162,18 @@ class Game(
     }
 
     fun sendStateToServer() {
-        network.sendMessage(
-            PlayerMessage(
-                Player(
-                    gamePlayer.view.x.toInt().toShort(),
-                    gamePlayer.view.y.toInt().toShort(),
-                    0,
-                    0,
-                    0,
-                    0,
-                    gamePlayer.playerId
-                )
+        val playerMessage = PlayerMessage(
+            Player(
+                localPlayer.view.x.toInt().toShort(),
+                localPlayer.view.y.toInt().toShort(),
+                0,
+                0,
+                0,
+                0,
+                localPlayer.playerId
             )
         )
+        network.sendMessage(playerMessage)
     }
 
     private fun createPlayer(player: Player): GamePlayer {

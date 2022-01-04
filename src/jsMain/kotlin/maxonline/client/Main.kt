@@ -6,7 +6,6 @@ import kotlinx.browser.window
 import maxonline.shared.GameMessage
 import org.w3c.dom.HTMLCanvasElement
 import pixi.typings.app.Application
-import pixi.typings.app.resizeTo
 import pixi.typings.loaders.Loader
 import pixi.typings.sprite.Sprite
 import pixi.typings.ticker.Ticker
@@ -44,10 +43,9 @@ fun start() {
 
     Ticker.shared.add<Any>({ _, _ ->
         sprite.apply {
-            x = Random.nextDouble() * window.innerWidth
-            y = Random.nextDouble() * window.innerHeight
+            x += Random.nextDouble() - 0.5
+            y += Random.nextDouble() - 0.5
         }
-        println("tick")
     })
 
     app.stage.addChild(sprite)
