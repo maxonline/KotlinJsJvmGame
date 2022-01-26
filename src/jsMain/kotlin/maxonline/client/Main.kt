@@ -29,26 +29,12 @@ fun main() {
 
     val rootDiv = document.getElementById("root")
     rootDiv!!.appendChild(app.view)
-    Loader.shared.add("test", "static/test.png").load(::start)
+    Loader.shared.add("kotlin", "static/kotlin.png").load(::start)
 }
 
 fun start() {
     println("start")
-    val sprite = Sprite.from("static/test.png").apply {
-        width = 100.0
-        height = 100.0
-        x = window.innerWidth / 2.0
-        y = window.innerHeight / 2.0
-    }
 
-    Ticker.shared.add<Any>({ _, _ ->
-        sprite.apply {
-            x += Random.nextDouble() - 0.5
-            y += Random.nextDouble() - 0.5
-        }
-    })
-
-    app.stage.addChild(sprite)
 
     network = Network("ws://" + document.location?.host) { onMessage(it) }
     println("start done")

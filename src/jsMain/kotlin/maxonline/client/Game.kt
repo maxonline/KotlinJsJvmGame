@@ -1,6 +1,7 @@
 package maxonline.client
 
 import kotlinx.browser.document
+import kotlinx.browser.window
 import maxonline.js.hasPointerLock
 import maxonline.js.movementX
 import maxonline.js.movementY
@@ -13,9 +14,11 @@ import org.w3c.dom.HTMLCanvasElement
 import pixi.typings.app.Application
 import pixi.typings.display.DisplayObject
 import pixi.typings.graphics.Graphics
+import pixi.typings.sprite.Sprite
 import pixi.typings.ticker.Ticker
 import pixi.typings.utils.rgb2hex
 import kotlin.js.Date
+import kotlin.random.Random
 
 class Game(
     player: Player,
@@ -23,21 +26,39 @@ class Game(
     val canvas: HTMLCanvasElement,
     val network: Network
 ) {
-
     val localPlayer: GamePlayer;
     var players: HashMap<PlayerId, GamePlayer> = HashMap()
     var circles: HashMap<GameCircle, DisplayObject> = HashMap()
 
     init {
-
         val gr = Graphics()
         gr.beginFill(0.0);
         gr.drawCircle(30.0, 30.0, 30.0);
         gr.endFill();
         pixiApp.stage.addChild(gr)
 
+        val sprite = Sprite.from("static/kotlin.png").apply {
+            width = 100.0
+            height = 100.0
+            x = window.innerWidth / 2.0
+            y = window.innerHeight / 2.0
+        }
+
+        Ticker.shared.add<Any>({ _, _ ->
+            sprite.apply {
+                x += Random.nextDouble() - 0.5
+                y += Random.nextDouble() - 0.5
+            }
+        })
+
+        app.stage.addChild(sprite)
+
         localPlayer = createPlayer(player)
         pixiApp.stage.addChild(localPlayer.view)
+
+        pixiApp.stage.position.set(pixiApp.renderer.screen.width/2, pixiApp.renderer.screen.height/2);
+        pixiApp.stage.scale.set(1.0)
+        pixiApp.stage.pivot.set(localPlayer.view.x, localPlayer.view.y)
 
         val sendToServerTicker = Ticker()
         sendToServerTicker.maxFPS = 10.0
@@ -45,14 +66,6 @@ class Game(
             sendStateToServer()
         })
         sendToServerTicker.start()
-
-
-//        val cameraBounds = ClipContainer(1000.0, 1000.0)
-//        val camera = Camera()
-//        cameraBounds.addChild(camera)
-//        camera.addChild(gameContainer)
-//        stage.addChild(cameraBounds)
-//        //camera.setTo(circle)
 
         canvas.onmousedown = {
             if (document.hasPointerLock().not()) {
@@ -67,29 +80,19 @@ class Game(
         canvas.onmousemove = {
             if (document.hasPointerLock()) {
                 localPlayer.view.apply {
-                    x = localPlayer.view.x.toDouble() + it.movementX()
-                    y = localPlayer.view.y.toDouble() + it.movementY()
+                    x = localPlayer.view.x + it.movementX()
+                    y = localPlayer.view.y + it.movementY()
                 }
-                println("new player location: ${localPlayer.view.x}:${localPlayer.view.y}")
+                pixiApp.stage.pivot.set(localPlayer.view.x, localPlayer.view.y); //now character inside stage is mapped to center of screen
             }
         }
-//        stage.addUpdater {
-//            camera.setTo(
-//                Rectangle(
-//                    stage.x + gamePlayer.view.x * stage.scaleX - stage.scaledWidth / 2 * zoom,
-//                    stage.y + gamePlayer.view.y * stage.scaleY - stage.scaledHeight / 2 * zoom,
-//                    stage.scaledWidth * zoom,
-//                    stage.scaledWidth * zoom,
-//                )
-//            )
-//        }
+
         canvas.onwheel = {
             zoom += it.deltaY * 0.05
             zoom = minOf(maxOf(zoom, 0.3), 3.0)
+            pixiApp.stage.scale.set(zoom)
             ""
         }
-
-
     }
 
     private var lastPlayersUpdate = Date.now()
