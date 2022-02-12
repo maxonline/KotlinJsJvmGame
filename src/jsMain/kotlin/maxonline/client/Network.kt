@@ -51,7 +51,7 @@ class Network(server: String, onMessage: (GameMessage) -> Unit) {
                 println("Websocket disconnected.")
             }
         }
-
+        println("Network initialized.")
     }
 
     fun sendMessage(playerMessage: PlayerMessage) {

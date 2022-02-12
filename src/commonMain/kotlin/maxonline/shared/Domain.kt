@@ -1,4 +1,5 @@
 package maxonline.shared
+
 import kotlinx.serialization.*
 
 typealias PlayerId = Short
@@ -7,13 +8,15 @@ typealias PlayerId = Short
 data class GameMessage (
     val players:List<Player>? = null,
     val handshake: HandshakeFromServer? = null,
-    val circles:List<GameCircle>? = null
+    val circles:List<GameCircle>? = null,
 )
 
 @Serializable
 data class HandshakeFromServer(
-    val you:Player
-)
+    val you:Player,
+    val map:MapTiles,
+
+    )
 
 
 @Serializable
@@ -69,3 +72,20 @@ data class PlayerMessage (
 data class HandshakeFromPlayer(
     val playerId: Short? = null,
 )
+
+
+
+@Serializable
+data class MapTiles(
+    val width: Int,
+    val height: Int,
+    val Map: HashMap<TileCoordinate, Tile>
+)
+
+@Serializable
+data class TileCoordinate(val x: Int, val y: Int)
+
+enum class Tile{
+  WALL,
+  EMPTY
+}

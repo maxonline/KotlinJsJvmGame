@@ -1,21 +1,20 @@
 package maxonline.server
 
 import io.ktor.application.*
-import io.ktor.features.origin
+import io.ktor.features.*
 import io.ktor.html.*
-import io.ktor.http.cio.websocket.Frame
-import io.ktor.http.cio.websocket.readBytes
+import io.ktor.http.cio.websocket.*
 import io.ktor.http.content.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import io.ktor.websocket.WebSockets
-import io.ktor.websocket.webSocket
+import io.ktor.websocket.*
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.html.*
 
 fun main() {
     val gameServer = GameServer()
+
 
     embeddedServer(Netty, port = 8080, host = "127.0.0.1") {
         install(WebSockets)

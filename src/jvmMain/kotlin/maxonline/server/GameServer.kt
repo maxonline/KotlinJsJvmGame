@@ -19,7 +19,7 @@ class GameServer {
 
     private val sessionToPlayers = HashMap<DefaultWebSocketServerSession, Player>()
     private var circles: List<GameCircle> = ArrayList()
-
+    private val map: MapTiles
     private var lastId: Short = 1
 
     private val format = ProtoBuf { encodeDefaults = false }
@@ -29,6 +29,7 @@ class GameServer {
 
     init {
         var lastUpdateTime = System.currentTimeMillis()
+        map = loadMap( this.javaClass.classLoader.getResource("map.png"))
 
         val timer = fixedRateTimer(period = 50) {
             val now = System.currentTimeMillis()
@@ -72,7 +73,7 @@ class GameServer {
                 sessionToPlayers[session] = newPlayer
                 val frame = Frame.Binary(
                     true,
-                    format.encodeToByteArray(GameMessage(handshake = HandshakeFromServer(newPlayer)))
+                    format.encodeToByteArray(GameMessage(handshake = HandshakeFromServer(newPlayer, map)))
                 )
                 GlobalScope.launch(CoroutineName("send-single")) { session.send(frame) }
                 println("Sent single to " + newPlayer)

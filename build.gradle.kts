@@ -9,6 +9,10 @@ val ktor_version = "2.0.0-eap-132"
 val logback_version = "1.2.3"
 val serialization_version = "1.3.0"
 
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor(0, "seconds") // to get new SNAPSHOT versions
+}
+
 repositories {
     mavenCentral()
     jcenter()
@@ -78,10 +82,11 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf-js:$serialization_version")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor-js:$serialization_version")
 
-                implementation("com.github.turansky.seskar:seskar-core:0.1.0")
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-extensions:1.0.1-pre.263-kotlin-1.5.31")
                 //implementation(npm("pixi.js", "6.2.0"))
-                implementation("io.github.ayfri:PIXI-Kotlin:0.1.0")
+                implementation("io.github.ayfri:PIXI-Kotlin:0.1.0-SNAPSHOT")
+                implementation("com.github.turansky.seskar:seskar-core:0.2.0")
+
             }
         }
         val jsTest by getting {

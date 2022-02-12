@@ -6,38 +6,34 @@ import kotlinx.browser.window
 import maxonline.shared.GameMessage
 import org.w3c.dom.HTMLCanvasElement
 import pixi.typings.app.Application
+import pixi.typings.constants.SCALE_MODES
 import pixi.typings.loaders.Loader
-import pixi.typings.sprite.Sprite
-import pixi.typings.ticker.Ticker
+import pixi.typings.settings.settings
 import pixi.utils.Application
-import kotlin.random.Random
 
 typealias PlayerId = Short
 
 lateinit var network: Network
 private var game: Game? = null
 
-lateinit var app: Application
+lateinit var pixiApp: Application
 
 fun main() {
     println("js executing")
     pixi.typings.require("pixi.js")
-    app = Application {
+    pixiApp = Application {
         backgroundColor = (08080808f).toDouble()
         resizeTo = window
     }
+    settings.SCALE_MODE = SCALE_MODES.NEAREST
 
     val rootDiv = document.getElementById("root")
-    rootDiv!!.appendChild(app.view)
-    Loader.shared.add("kotlin", "static/kotlin.png").load(::start)
+    rootDiv!!.appendChild(pixiApp.view)
+    Loader.shared.add("map", "static/map.png").load(::start)
 }
 
 fun start() {
-    println("start")
-
-
     network = Network("ws://" + document.location?.host) { onMessage(it) }
-    println("start done")
 
 }
 
@@ -49,12 +45,9 @@ private fun onMessage(gameMessage: GameMessage) {
             ?.item(0) as HTMLCanvasElement
 
         if (gameMessage.handshake != null) {
-            game = Game(gameMessage.handshake.you, app, canvas, network)
+            game = Game(gameMessage.handshake.you, pixiApp, canvas, network, gameMessage.handshake.map)
         } else {
             println("recieved no handshake :(")
         }
     }
 }
-
-
-

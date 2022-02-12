@@ -6,57 +6,75 @@ import maxonline.js.hasPointerLock
 import maxonline.js.movementX
 import maxonline.js.movementY
 import maxonline.js.requestPointerLock
-import maxonline.shared.GameCircle
-import maxonline.shared.GameMessage
-import maxonline.shared.Player
-import maxonline.shared.PlayerMessage
+import maxonline.shared.*
 import org.w3c.dom.HTMLCanvasElement
 import pixi.typings.app.Application
+import pixi.typings.display.Container
 import pixi.typings.display.DisplayObject
 import pixi.typings.graphics.Graphics
 import pixi.typings.sprite.Sprite
 import pixi.typings.ticker.Ticker
 import pixi.typings.utils.rgb2hex
 import kotlin.js.Date
-import kotlin.random.Random
 
 class Game(
     player: Player,
     val pixiApp: Application,
     val canvas: HTMLCanvasElement,
-    val network: Network
+    val network: Network,
+    val map: MapTiles
 ) {
     val localPlayer: GamePlayer;
     var players: HashMap<PlayerId, GamePlayer> = HashMap()
     var circles: HashMap<GameCircle, DisplayObject> = HashMap()
+    val masks = Container()
+
 
     init {
+        (0 until   map.height).forEach { y ->
+            (0 until map.width).forEach { x ->
+                if (map.Map[TileCoordinate(x,y)] == Tile.WALL) {
+                    print("#")
+                } else {
+                    print(" ")
+                }
+            }
+            println()
+        }
+
+
         val gr = Graphics()
+        val renderer = pixiApp.renderer
+
         gr.beginFill(0.0);
         gr.drawCircle(30.0, 30.0, 30.0);
         gr.endFill();
         pixiApp.stage.addChild(gr)
+        //masks.position.x = renderer.width/2
+        //masks.position.y = renderer.height/2
+        maxonline.client.pixiApp.stage.addChild(masks)
 
-        val sprite = Sprite.from("static/kotlin.png").apply {
-            width = 100.0
-            height = 100.0
+        val map = Container()
+        map.position.x = renderer.width/2
+        map.position.y = renderer.height/2
+
+        val mapSprite = Sprite.from("static/map.png").apply {
+            width = 2000.0
+            height = 2000.0
             x = window.innerWidth / 2.0
             y = window.innerHeight / 2.0
         }
 
-        Ticker.shared.add<Any>({ _, _ ->
-            sprite.apply {
-                x += Random.nextDouble() - 0.5
-                y += Random.nextDouble() - 0.5
-            }
-        })
+        map.addChild(mapSprite)
 
-        app.stage.addChild(sprite)
+        map.mask = masks
+
+        maxonline.client.pixiApp.stage.addChild(map)
 
         localPlayer = createPlayer(player)
         pixiApp.stage.addChild(localPlayer.view)
 
-        pixiApp.stage.position.set(pixiApp.renderer.screen.width/2, pixiApp.renderer.screen.height/2);
+        pixiApp.stage.position.set(renderer.screen.width/2, renderer.screen.height/2);
         pixiApp.stage.scale.set(1.0)
         pixiApp.stage.pivot.set(localPlayer.view.x, localPlayer.view.y)
 
@@ -127,7 +145,7 @@ class Game(
                 gr.drawCircle(serverCircle.x.toDouble(), serverCircle.y.toDouble(), serverCircle.diameter / 2.0);
                 gr.endFill();
                 circles[serverCircle] = gr
-                pixiApp.stage.addChild(gr)
+                masks.addChild(gr)
             }
         }
         circles.filterKeys { !(circlesFromServer?.contains(it) ?: false) }
